@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "746487086463",
+    "project_id": "speedydrop-e23ca",
+    "storage_bucket": "speedydrop-e23ca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:746487086463:android:9091c03d1a33e71b47ee4a",
+        "android_client_info": {
+          "package_name": "abdullah.co.pk.speedydrop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDssT6W5m7ZG-sGluIZu03frPcT0Pct7RA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
