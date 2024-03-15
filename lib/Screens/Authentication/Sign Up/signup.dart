@@ -1,18 +1,17 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:speedydrop/Constants/constants.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Services/Auth/auth.dart';
 
-class Sign_Up_Customer extends StatefulWidget {
-  const Sign_Up_Customer({super.key});
+class SignUp extends StatefulWidget {
+  const SignUp({super.key});
 
   @override
-  State<Sign_Up_Customer> createState() => _Sign_Up_CustomerState();
+  State<SignUp> createState() => _SignUpState();
 }
 
-class _Sign_Up_CustomerState extends State<Sign_Up_Customer> {
+class _SignUpState extends State<SignUp> {
   @override
   // Variables
 

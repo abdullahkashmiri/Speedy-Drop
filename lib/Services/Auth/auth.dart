@@ -1,6 +1,4 @@
 import 'dart:developer';
-
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:speedydrop/Constants/constants.dart';
 import 'package:speedydrop/Models/User/user.dart';
@@ -58,7 +56,7 @@ class Auth_Service {
     }
   }
 
-  // Digning Out Function
+  // Signing Out Function
   Future signOut() async {
     try {
       return _auth.signOut();
@@ -66,6 +64,12 @@ class Auth_Service {
       log('Error signing out: $e');
       return null;
     }
+  }
+
+  //Provider for wrapper sending the status of current user back to the wrapper
+  //so it can decide what to do //Stream keeping it update until some event happens
+  Stream<Current_User?> get user {
+    return _auth.authStateChanges().map((User? user) => _userFromFirebaseUser(user!));
   }
 
 }

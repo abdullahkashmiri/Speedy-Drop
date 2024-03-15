@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:speedydrop/Models/User/user.dart';
 import 'package:speedydrop/Screens/Splash/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:speedydrop/firebase_options.dart'; // Importing your Firebase options file
+import 'package:speedydrop/Services/Auth/auth.dart';
+import 'package:speedydrop/firebase_options.dart'; // Importing Firebase options file
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,14 +19,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Speedy Drop',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
-        useMaterial3: true,
+    return StreamProvider<Current_User?>.value(
+      initialData: null,
+      value: Auth_Service().user,
+      catchError: (_,__) => null,
+      child: MaterialApp(
+        title: 'Speedy Drop',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
+          useMaterial3: true,
+        ),
+        debugShowCheckedModeBanner: false,
+        home: const Splash_Screen(),
       ),
-      debugShowCheckedModeBanner: false,
-      home: const Splash_Screen(),
     );
   }
 }

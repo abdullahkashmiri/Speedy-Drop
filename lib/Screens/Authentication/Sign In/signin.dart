@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:speedydrop/Constants/constants.dart';
 import 'package:speedydrop/Screens/Authentication/Sign%20Up/signup.dart';
@@ -7,14 +6,14 @@ import 'package:speedydrop/Screens/Home/home.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Services/Auth/auth.dart';
 
-class Sign_In_Customer extends StatefulWidget {
-  const Sign_In_Customer({super.key});
+class SignIn extends StatefulWidget {
+  const SignIn({super.key});
 
   @override
-  State<Sign_In_Customer> createState() => _Sign_In_CustomerState();
+  State<SignIn> createState() => _SignInState();
 }
 
-class _Sign_In_CustomerState extends State<Sign_In_Customer> {
+class _SignInState extends State<SignIn> {
   //Variables
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
@@ -193,7 +192,7 @@ class _Sign_In_CustomerState extends State<Sign_In_Customer> {
                         await Future.delayed(const Duration(milliseconds: 500));
                         Navigator.push(
                             context, MaterialPageRoute(builder: (context) {
-                          return Sign_Up_Customer();
+                          return SignUp();
                         }));
                         setState(() {
                           _isSigningIn = false;
