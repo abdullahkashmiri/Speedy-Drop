@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:speedydrop/Screens/Loading/loading.dart';
+import 'package:speedydrop/Screens/Authentication/Sign%20In/signin.dart';
 
 class Splash_Screen extends StatefulWidget {
   const Splash_Screen({Key? key});
@@ -31,7 +31,7 @@ class _Splash_ScreenState extends State<Splash_Screen> with TickerProviderStateM
     _animationController.forward();
 
     Future.delayed(const Duration(seconds: 4), () {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Loading_Screen()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Sign_In_Customer()));
     });
   }
 
@@ -45,7 +45,7 @@ class _Splash_ScreenState extends State<Splash_Screen> with TickerProviderStateM
           return Center(
             child: Transform.scale(
               scale: _animation.value,
-              child: Image.asset('assets/images/Speedy.png'),
+              child: Image.asset('assets/images/Speedyv1.png'),
             ),
           );
         },
