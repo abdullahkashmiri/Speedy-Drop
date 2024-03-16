@@ -1,5 +1,8 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:speedydrop/Screens/Home/homeSeller.dart';
+import 'package:speedydrop/Services/Auth/auth.dart';
+import 'homeRider.dart';
 
 class HomeScreenBuyer extends StatefulWidget {
   const HomeScreenBuyer({super.key});
@@ -12,7 +15,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
 
   //Variables
   Color _orangeColor = Colors.orange.shade800;
-
+  final Auth_Service _auth_service = Auth_Service();
 
   //Functions
   @override
@@ -90,10 +93,17 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
             onSelected: (String value) {
               if (value == 'seller-mode') {
                 log('seller-mode');
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                  return const HomeScreenSeller();
+                }));
               } else if (value == 'rider-mode') {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                  return const HomeScreenRider();
+                }));
                 log('rider-mode');
               } else if (value == 'logout') {
                 log('logout');
+                _auth_service.signOut();
               }
               setState(() {
                 _orangeColor = Colors.orange.shade800;
@@ -107,12 +117,12 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.home,
+            Icon(Icons.home_filled,
               color: _orangeColor,
               size: 35,),
-            SizedBox(width: 5.0,),
+            const SizedBox(width: 5.0,),
             Text(
-              'Home',
+              'Home Buyer',
               style: TextStyle(
                 color: _orangeColor,
                 fontSize: 24.0,
