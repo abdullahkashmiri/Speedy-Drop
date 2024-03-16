@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:speedydrop/Models/User/user.dart';
 import 'package:speedydrop/Screens/Authentication/Sign%20In/signin.dart';
-import 'package:speedydrop/Screens/Home/home.dart';
+import 'package:speedydrop/Screens/Home/homeBuyer.dart';
 
 class Wrapper extends StatelessWidget {
   const Wrapper({super.key});
@@ -13,7 +13,7 @@ class Wrapper extends StatelessWidget {
     if(user == null) {
       return const SignIn();
     } else {
-      return const HomeScreen();
+      return const HomeScreenBuyer();
     }
   }
 }
