@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:speedydrop/Screens/Home/homeSeller.dart';
 import '../../Services/Auth/auth.dart';
+import '../Authentication/Sign In/signin.dart';
 import 'homeBuyer.dart';
 
 class HomeScreenRider extends StatefulWidget {
@@ -99,12 +100,15 @@ class _HomeScreenRiderState extends State<HomeScreenRider> {
                 }));
               } else if (value == 'seller-mode') {
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-                  return const HomeScreenSeller();
+                  return const HomeScreenSeller(previousScreen: 'homeRider',);
                 }));
                 log('seller-mode');
               } else if (value == 'logout') {
                 log('logout');
                 _auth_service.signOut();
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                  return const SignIn();
+                }));
               }
               setState(() {
                 _orangeColor = Colors.orange.shade800;

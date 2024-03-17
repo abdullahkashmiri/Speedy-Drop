@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:speedydrop/Screens/Authentication/Sign%20In/signin.dart';
 import 'package:speedydrop/Screens/Home/homeSeller.dart';
 import 'package:speedydrop/Services/Auth/auth.dart';
 import 'homeRider.dart';
@@ -16,6 +17,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
   //Variables
   Color _orangeColor = Colors.orange.shade800;
   final Auth_Service _auth_service = Auth_Service();
+
 
   //Functions
   @override
@@ -94,7 +96,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
               if (value == 'seller-mode') {
                 log('seller-mode');
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-                  return const HomeScreenSeller();
+                  return const HomeScreenSeller(previousScreen: 'homeBuyer',);
                 }));
               } else if (value == 'rider-mode') {
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
@@ -104,6 +106,9 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
               } else if (value == 'logout') {
                 log('logout');
                 _auth_service.signOut();
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                  return const SignIn();
+                }));
               }
               setState(() {
                 _orangeColor = Colors.orange.shade800;

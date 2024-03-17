@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:speedydrop/Constants/constants.dart';
 import 'package:speedydrop/Models/User/user.dart';
+import 'package:speedydrop/Services/Database/database.dart';
 
 
 class Auth_Service {
@@ -31,8 +32,17 @@ class Auth_Service {
 
       // Create a new record of user in database
       // ---------------
-
-      return _userFromFirebaseUser(user);
+      bool userInitialized = await Database_Service(userId: user!.uid).initializeUserDataOnCloud(user.uid,
+          name, email, password);
+      if(userInitialized == true) {
+        return _userFromFirebaseUser(user);
+      } else {
+        // if initializing user fails, then delete user.
+        await _auth.currentUser?.delete();
+        var errorMessage = 'Failed to create an Account';
+        Global_error = errorMessage;
+        return null;
+      }
     } catch (e) {
       log('Error Signing Up User: $e');
       var errorMessage = e.toString().replaceAll(RegExp(r'\[.*?\]'), '');
@@ -70,6 +80,15 @@ class Auth_Service {
   //so it can decide what to do //Stream keeping it update until some event happens
   Stream<Current_User?> get user {
     return _auth.authStateChanges().map((User? user) => _userFromFirebaseUser(user!));
+  }
+
+  String getUserId() {
+    User? user = _auth.currentUser;
+    if(user != null) {
+      return user.uid;
+    } else {
+      return ''; // user not signed inn.
+    }
   }
 
 }

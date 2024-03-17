@@ -15,8 +15,8 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   //Variables
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   final Auth_Service _auth_service = Auth_Service();
   String _email = '';
