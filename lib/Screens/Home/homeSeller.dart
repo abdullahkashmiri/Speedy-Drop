@@ -260,6 +260,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:speedydrop/Screens/Home/homeBuyer.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
+import 'package:speedydrop/Screens/Manage%20Store/manage_store.dart';
 import 'package:speedydrop/Screens/Products/New%20Product/new_product.dart';
 import 'package:speedydrop/Services/Database/database.dart';
 import '../../Services/Auth/auth.dart';
@@ -295,7 +296,7 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Speedy Drop',
+        title: const Text('Your Store',
           style: TextStyle(
             color: Colors.white,
           ),),
@@ -303,13 +304,13 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
         backgroundColor: _orangeColor,
 
         actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const NewProductScreen();
-                }));
-              },
-              icon: const Icon(Icons.add_box, color: Colors.white,)),
+          // IconButton(
+          //     onPressed: () {
+          //       Navigator.push(context, MaterialPageRoute(builder: (context) {
+          //         return const NewProductScreen();
+          //       }));
+          //     },
+          //     icon: const Icon(Icons.add_box, color: Colors.white,)),
           PopupMenuButton(
             iconColor: Colors.white,
             onOpened: () {
@@ -414,64 +415,86 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
               bool isSeller = products.isNotEmpty;
               if (isSeller) {
                 // Return a GridView to display products
-                return Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: GridView.builder(
-                    itemCount: products.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2, // Two products per row
-                      mainAxisSpacing: 10.0,
-                      crossAxisSpacing: 10.0,
-                      childAspectRatio: 0.7, // Aspect ratio for better layout
-                    ),
-                    itemBuilder: (context, index) {
-                      Map<String, dynamic> product = products[index];
-                      return Card(
-                        elevation: 4, // Add elevation for a shadow effect
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0), // Rounded corners
+                return Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: GridView.builder(
+                        itemCount: products.length,
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2, // Two products per row
+                          mainAxisSpacing: 10.0,
+                          crossAxisSpacing: 10.0,
+                          childAspectRatio: 0.7, // Aspect ratio for better layout
                         ),
-                        color: Colors.white,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Display product image (assuming 'images' is a list of image URLs)
-                            ClipRRect(
-                              borderRadius: const BorderRadius.vertical(top: Radius.circular(10.0)),
-                              child: Image.network(
-                                product['images'][0], // Assuming the first image URL is used
-                                width: double.infinity,
-                                height: 150.0,
-                                fit: BoxFit.cover,
-                              ),
+                        itemBuilder: (context, index) {
+                          Map<String, dynamic> product = products[index];
+                          return Card(
+                            elevation: 4, // Add elevation for a shadow effect
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0), // Rounded corners
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    product['product-name'],
-                                    style: const TextStyle(
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                            color: Colors.white,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Display product image (assuming 'images' is a list of image URLs)
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.vertical(top: Radius.circular(10.0)),
+                                  child: Image.network(
+                                    product['images'][0], // Assuming the first image URL is used
+                                    width: double.infinity,
+                                    height: 150.0,
+                                    fit: BoxFit.cover,
                                   ),
-                                  const SizedBox(height: 5.0),
-                                  Text(
-                                    'Price: ${product['price']}',
-                                    style: const TextStyle(
-                                      fontSize: 14.0,
-                                    ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        product['product-name'],
+                                        style: const TextStyle(
+                                          fontSize: 16.0,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 5.0),
+                                      Text(
+                                        'Price: ${product['price']}',
+                                        style: const TextStyle(
+                                          fontSize: 14.0,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ), // Set the background color of the card
-                      );
-                    },
-                  ),
+                                ),
+                              ],
+                            ), // Set the background color of the card
+                          );
+                        },
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 20,
+                      right: 20,
+                      child: ElevatedButton(
+                          onPressed: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) {
+                              return const ManageStore();
+                            }));
+                          },
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Icon(Icons.store),
+                              SizedBox(width: 2.0,),
+                              Text('Manage'),
+                            ],
+                          )),
+                    )
+                  ],
                 );
               }
               else {

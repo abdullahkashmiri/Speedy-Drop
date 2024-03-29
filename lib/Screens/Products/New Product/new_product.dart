@@ -112,9 +112,47 @@ class _NewProductScreenState extends State<NewProductScreen> {
                       mainAxisSpacing: 4.0,
                       crossAxisSpacing: 4.0,
                     ),
-                    itemCount: _images.length + 1, // for the add button
+                    itemCount: _images.length == 0 ? 2 : _images.length + 1, // for the add button
                     itemBuilder: (context, index) {
-                      if (index == _images.length) {
+                      if (_images.length == 0 && index == 0) {
+                        // Display transparent box
+                        return Container(
+                          color: Colors.transparent,
+                        );
+                      } else if (_images.isEmpty && index == 1) {
+                        // Display Add Button
+                        return GestureDetector(
+                          onTap: () {
+                            if (_images.length < numberOfImages) {
+                              _getImage();
+                              if (_images.length == 2 && imagesHeight == 110) {
+                                setState(() {
+                                  imagesHeight = 220;
+                                });
+                              }
+                            } else {
+                              log('Maximum images limit has been reached');
+                              setState(() {
+                                _error = 'Maximum images limit reached!';
+                              });
+                            }
+                          },
+                          child: Container(
+                            color: Colors.grey.shade300,
+                            child: _images.length < numberOfImages
+                                ? const Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(height: 10.0,),
+                                Icon(Icons.add, size: 30.0,),
+                                Text('Upload Image',
+                                  style: TextStyle(fontSize: 12.0),),
+                              ],
+                            )
+                                : const Icon(Icons.error),
+                          ),
+                        );
+                      } else if (_images.length > 0 && index == _images.length) {
                         // Last item is the Add Button
                         return GestureDetector(
                           onTap: () {
@@ -188,7 +226,10 @@ class _NewProductScreenState extends State<NewProductScreen> {
                           ],
                         );
                       }
-                    }),
+                    }
+                ),
+
+
               ),
               Text(_error, style: const TextStyle(
                   color: Colors.red, fontWeight: FontWeight.bold),),
