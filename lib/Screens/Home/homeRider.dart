@@ -34,16 +34,7 @@ class _HomeScreenRiderState extends State<HomeScreenRider> {
         actions: [
           PopupMenuButton(
             iconColor: Colors.white,
-            onOpened: () {
-              setState(() {
-                _orangeColor = Colors.orange.shade900;
-              });
-            },
-            onCanceled: () {
-              setState(() {
-                _orangeColor = Colors.orange.shade800;
-              });
-            },
+
             itemBuilder: (BuildContext context) =>
             [
               PopupMenuItem(

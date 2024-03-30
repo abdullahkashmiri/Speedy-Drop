@@ -4,7 +4,7 @@ import 'package:speedydrop/Models/User/user.dart';
 import 'package:speedydrop/Screens/Splash/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:speedydrop/Services/Auth/auth.dart';
-import 'package:speedydrop/firebase_options.dart'; // Importing Firebase options file
+import 'package:speedydrop/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

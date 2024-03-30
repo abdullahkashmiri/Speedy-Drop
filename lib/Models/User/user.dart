@@ -1,5 +1,3 @@
-
-
 class Current_User {
   //Variables
   final String uid;

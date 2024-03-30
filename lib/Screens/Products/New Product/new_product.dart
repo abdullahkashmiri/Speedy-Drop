@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'dart:developer' as dev;
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,6 +6,10 @@ import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Services/Database/database.dart';
 import '../../../Constants/constants.dart';
 import '../../../Services/Auth/auth.dart';
+import '../../Account/seller_account.dart';
+import '../../Authentication/Sign In/signin.dart';
+import '../../Home/homeBuyer.dart';
+import '../../Home/homeRider.dart';
 
 class NewProductScreen extends StatefulWidget {
   const NewProductScreen({super.key});
@@ -31,7 +35,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
   String _description = '';
   double _price = 0.0;
   int _quantity = 0;
-
+  String _profileImage = 'assets/images/speedyLogov1.png';
   String _selectedCategory = 'not-selected';
   bool isLoading = false;
 
@@ -46,14 +50,12 @@ class _NewProductScreenState extends State<NewProductScreen> {
       });
     }
   }
-
   void _incrementQuantity() {
     setState(() {
       _quantity++;
       _quantityController.text = _quantity.toString();
     });
   }
-
   void _decrementQuantity() {
     setState(() {
       if (_quantity > 0) {
@@ -64,7 +66,6 @@ class _NewProductScreenState extends State<NewProductScreen> {
       }
     });
   }
-
   void _updateQuantityFromField() {
     setState(() {
       _quantity = int.tryParse(_quantityController.text) ?? 0;
@@ -76,30 +77,117 @@ class _NewProductScreenState extends State<NewProductScreen> {
     if(isLoading == false) {
       return Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.arrow_back,
-              color: Colors.white,
-              size: 30.0,),
-          ),
-          title: const Text('Add New Product',
-            style: TextStyle(color: Colors.white),),
-          centerTitle: true,
-          backgroundColor: _orangeColor,
+          title: Row(
+            children: [
+              const Expanded(
+                child: Row(
+                  children: [
+                    SizedBox(width: 20.0,),
+                    Center(
+                      child: Text(
+                        'Add New Product',
+                        style: TextStyle(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SellerAccount()),
+                  );
+                },
+                child: CircleAvatar(
+                  radius: 18,
+                  backgroundImage: AssetImage(_profileImage),
+                ),
+              ),
+            ],
+          ),
+          leading: PopupMenuButton(
+            icon: const Icon(Icons.menu),
+            itemBuilder: (BuildContext context) =>
+            [
+              PopupMenuItem(
+                value: 'buyer-mode',
+                child: Row(
+                  children: [
+                    Icon(Icons.switch_account,
+                      color: _orangeColor,),
+                    const SizedBox(width: 10.0,),
+                    const Text('Buyer',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'rider-mode',
+                child: Row(
+                  children: [
+                    Icon(Icons.motorcycle_sharp, color: _orangeColor,),
+                    const SizedBox(width: 10.0,),
+                    const Text(
+                        'Rider', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, color: _orangeColor,),
+                    const SizedBox(width: 10.0,),
+                    const Text('LogOut',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ),
+            ],
+            onSelected: (String value) {
+              if (value == 'buyer-mode') {
+                dev.log('buyer-mode');
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                  return const HomeScreenBuyer();
+                }));
+              }  else if (value == 'rider-mode') {
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) {
+                  return const HomeScreenRider();
+                }));
+                dev.log('rider-mode');
+              } else if (value == 'logout') {
+                dev.log('logout');
+                _auth_service.signOut();
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) {
+                  return const SignIn();
+                }));
+              }
+
+            },
+
+          ),
         ),
-        backgroundColor: Colors.orange.shade50,
         body: SingleChildScrollView(
           child: Column(
-
             children: [
               const SizedBox(height: 10.0,),
-              const Text('Product Details',
+              Text('Product Details',
                 style: TextStyle(
                   fontSize: 20.0,
                   fontWeight: FontWeight.bold,
+                  color: _orangeColor
                 ),),
               const SizedBox(height: 10.0,),
               Container(
@@ -131,7 +219,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                 });
                               }
                             } else {
-                              log('Maximum images limit has been reached');
+                              dev.log('Maximum images limit has been reached');
                               setState(() {
                                 _error = 'Maximum images limit reached!';
                               });
@@ -164,7 +252,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                 });
                               }
                             } else {
-                              log('Maximum images limit has been reached');
+                              dev.log('Maximum images limit has been reached');
                               setState(() {
                                 _error = 'Maximum images limit reached!';
                               });
@@ -471,14 +559,14 @@ class _NewProductScreenState extends State<NewProductScreen> {
                                 _images, _productName, _description, _price,
                                 _quantity, _selectedCategory);
                             if (isProductAdded == true) {
-                              log('Product added successfully');
+                              dev.log('Product added successfully');
                               Navigator.pop(context);
                                 isLoading = false;
                             } else {
                               setState(() {
                                 _error = 'Unable to add Product!';
                               });
-                              log('Unable to add product');
+                              dev.log('Unable to add product');
                             }
                           } else {
                             if (_productName != '' && _quantity != 0 &&
@@ -498,7 +586,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _orangeColor,
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 40.0, vertical: 5.0),
+                              horizontal: 40.0, vertical: 10.0),
                           elevation: 4.0,
                         ),
                         child: const Text('Add Product',

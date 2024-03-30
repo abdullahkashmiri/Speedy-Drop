@@ -175,16 +175,6 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
         ),
         leading: PopupMenuButton(
           icon: const Icon(Icons.menu),
-          onOpened: () {
-            setState(() {
-              _orangeColor = Colors.orange.shade900;
-            });
-          },
-          onCanceled: () {
-            setState(() {
-              _orangeColor = Colors.orange.shade800;
-            });
-          },
           itemBuilder: (BuildContext context) =>
           [
             PopupMenuItem(

@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
-
+import '../../Services/Auth/auth.dart';
+import '../Account/seller_account.dart';
+import '../Authentication/Sign In/signin.dart';
+import '../Home/homeBuyer.dart';
+import '../Home/homeRider.dart';
 import '../Products/New Product/new_product.dart';
+import 'dart:developer' as dev;
+
 
 class ManageStore extends StatefulWidget {
   const ManageStore({Key? key}) : super(key: key);
@@ -11,20 +17,116 @@ class ManageStore extends StatefulWidget {
 
 class _ManageStoreState extends State<ManageStore> {
   final Color _orangeColor = Colors.orange.shade800;
+  String _profileImage = 'assets/images/speedyLogov1.png';
+  final Auth_Service _auth_service = Auth_Service();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Product Management',
-          style: TextStyle(
-              color: Colors.white
-          ),),
-        backgroundColor: _orangeColor,
-        iconTheme: const IconThemeData(
-          color: Colors.white,
+        title: Row(
+          children: [
+            const Expanded(
+              child: Row(
+                children: [
+                  Center(
+                    child: Text(
+                     'Product Management',
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+
+                ],
+              ),
+            ),
+
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SellerAccount()),
+                );
+              },
+              child: CircleAvatar(
+                radius: 18,
+                backgroundImage: AssetImage(_profileImage),
+              ),
+            ),
+          ],
+        ),
+        leading: PopupMenuButton(
+          icon: const Icon(Icons.menu),
+          itemBuilder: (BuildContext context) =>
+          [
+            PopupMenuItem(
+              value: 'buyer-mode',
+              child: Row(
+                children: [
+                  Icon(Icons.switch_account,
+                    color: _orangeColor,),
+                  const SizedBox(width: 10.0,),
+                  const Text('Buyer',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            PopupMenuItem(
+              value: 'rider-mode',
+              child: Row(
+                children: [
+                  Icon(Icons.motorcycle_sharp, color: _orangeColor,),
+                  const SizedBox(width: 10.0,),
+                  const Text(
+                      'Rider', style: TextStyle(fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+            PopupMenuItem(
+              value: 'logout',
+              child: Row(
+                children: [
+                  Icon(Icons.logout, color: _orangeColor,),
+                  const SizedBox(width: 10.0,),
+                  const Text('LogOut',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+          ],
+          onSelected: (String value) {
+            if (value == 'buyer-mode') {
+              dev.log('buyer-mode');
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                return const HomeScreenBuyer();
+              }));
+            }  else if (value == 'rider-mode') {
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) {
+                return const HomeScreenRider();
+              }));
+              dev.log('rider-mode');
+            } else if (value == 'logout') {
+              dev.log('logout');
+              _auth_service.signOut();
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) {
+                return const SignIn();
+              }));
+            }
+
+          },
+
         ),
       ),
+
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -34,7 +136,7 @@ class _ManageStoreState extends State<ManageStore> {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
                     return const NewProductScreen();
                   }));
                 },
