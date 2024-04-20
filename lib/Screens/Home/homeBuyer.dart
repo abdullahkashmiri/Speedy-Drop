@@ -1,10 +1,16 @@
 import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
-import 'package:speedydrop/Screens/Account/buyer_account.dart';
+import 'package:speedydrop/Screens/Account/user_account.dart';
 import 'package:speedydrop/Screens/Authentication/Sign%20In/signin.dart';
 import 'package:speedydrop/Screens/Home/homeSeller.dart';
 import 'package:speedydrop/Services/Auth/auth.dart';
 import 'homeRider.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+
+
 
 
 class HomeScreenBuyer extends StatefulWidget {
@@ -19,6 +25,9 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
   //Variables
   Color _orangeColor = Colors.orange.shade800;
   final Auth_Service _auth_service = Auth_Service();
+  late Position _currentPosition;
+  String _currentAddress = '';
+
   String _currentLocation = 'DHA EME Society, Lahore';
   String _profileImage = 'assets/images/speedyLogov1.png';
   String _userName = 'Usman Faisal';
@@ -136,6 +145,40 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
 
   //Functions
   @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation();
+  }
+
+  void _getCurrentLocation() async {
+    // Check if the location permission is granted
+    var permissionStatus = await Permission.location.status;
+    if (permissionStatus.isGranted) {
+      try {
+        Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
+        List<Placemark> placemarks =
+        await placemarkFromCoordinates(position.latitude, position.longitude);
+        String address = placemarks.first.name ?? '';
+        setState(() {
+          _currentPosition = position;
+          _currentAddress = address;
+        });
+        print('loc: $_currentAddress');
+      } catch (e) {
+        print("Error: $e");
+      }
+    } else {
+      // If permission is not granted, request it
+      if (permissionStatus.isDenied || permissionStatus.isRestricted) {
+        await Permission.location.request();
+      }
+    }
+  }
+
+
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -143,27 +186,39 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
           children: [
             Icon(Icons.location_on_outlined, color: _orangeColor,),
             const SizedBox(width: 5.0,),
+
+
             Expanded(
-              child: Text(
-                _currentLocation,
-                style: const TextStyle(
-                  fontSize: 14.0,
+              child: _currentAddress.isNotEmpty
+                  ? Text(
+                _currentAddress,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.black,
                 ),
-                overflow: TextOverflow.ellipsis,
+              )
+                  : Text(
+                'Fetching Your Current Location',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.black,
+                ),
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.keyboard_arrow_down, size: 30.0,),
-              onPressed: () {
-                // ----------------------------- location update
-              },
-            ),
+
+
+            // IconButton(
+            //   icon: const Icon(Icons.keyboard_arrow_down, size: 30.0,),
+            //   onPressed: () {
+            //     // ----------------------------- location update
+            //   },
+            // ),
             GestureDetector(
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const BuyerAccount()),
+                      builder: (context) => const UserAccount()),
                 );
               },
               child: CircleAvatar(

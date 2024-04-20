@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../Services/Auth/auth.dart';
-import '../Account/seller_account.dart';
+import '../Account/user_account.dart';
 import '../Authentication/Sign In/signin.dart';
 import '../Home/homeBuyer.dart';
 import '../Home/homeRider.dart';
@@ -49,7 +49,7 @@ class _ManageStoreState extends State<ManageStore> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const SellerAccount()),
+                      builder: (context) => const UserAccount()),
                 );
               },
               child: CircleAvatar(

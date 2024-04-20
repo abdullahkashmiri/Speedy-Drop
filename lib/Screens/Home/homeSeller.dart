@@ -1,11 +1,13 @@
 import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:speedydrop/Screens/Account/user_account.dart';
 import 'package:speedydrop/Screens/Home/homeBuyer.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Screens/Manage%20Store/manage_store.dart';
+import 'package:speedydrop/Screens/Manage%20Store/open_store.dart';
 import 'package:speedydrop/Services/Database/database.dart';
 import '../../Services/Auth/auth.dart';
-import '../Account/seller_account.dart';
 import '../Authentication/Sign In/signin.dart';
 import 'homeRider.dart';
 
@@ -23,140 +25,210 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
   String previousScreen = '';
   Color _orangeColor = Colors.orange.shade800;
   final Auth_Service _auth_service = Auth_Service();
-  String _currentLocation = 'DHA EME Society, Lahore';
   String _profileImage = 'assets/images/speedyLogov1.png';
+  bool isSeller = true;
+  bool isLoading = true;
+
+  String ?ownerId;
+  String ?storeName;
+  String ?storeDescription;
+  List<String> ?selectedDays;
+  String ?openingHours;
+  String ?closingHours;
+  double ?latitude;
+  double ?longitude;
+  String ?contactNumber;
+  String ?storeImageLink;
+  String ?locationName = 'Unable to get Store Location';
+  String profilePhoto = '';
 
   //Functions
 
   @override
   void initState() {
-
     super.initState();
     previousScreen = widget.previousScreen;
+    isUserASeller();
   }
+
+  Future<void> isUserASeller() async {
+    isSeller =
+    await Database_Service(userId: _auth_service.getUserId()).isUserASeller();
+
+    if(isSeller) {
+      await storeDataInitialized();
+    }
+      setState(() {
+      isLoading = false;
+    });
+  }
+  Future<void> storeDataInitialized() async {
+    try {
+      // Fetch store data
+      Map<String, dynamic>? storeData = await Database_Service(userId: _auth_service.getUserId()).fetchStoreData();
+
+      if (storeData != null) {
+        // Extract data into variables
+        ownerId = storeData['owner-id'];
+        storeName = storeData['store-details']['store-name'];
+        storeDescription = storeData['store-details']['store-description'];
+        selectedDays = List<String>.from(storeData['store-details']['selectedDays']);
+        openingHours = storeData['store-details']['openingHours'];
+        closingHours = storeData['store-details']['closingHours'];
+        latitude = storeData['store-details']['address']['latitude'];
+        longitude = storeData['store-details']['address']['longitude'];
+        contactNumber = storeData['store-details']['contact-number'];
+        storeImageLink = storeData['store-details']['store-image'];
+
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          latitude!,
+          longitude!,
+        );
+        locationName = placemarks[0].name ?? '';
+        profilePhoto = await Database_Service(userId: _auth_service.getUserId()).fetchUserProfilePhoto();
+        print('proifilelel');
+        print(profilePhoto);
+        setState(() {
+
+        });
+      } else {
+        print('Failed to fetch store data');
+      }
+    } catch (e) {
+      print('Error occurred while initializing and fetching store data: $e');
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Icon(Icons.location_on_outlined, color: _orangeColor,),
-            const SizedBox(width: 5.0,),
-            Expanded(
-              child: Text(
-                _currentLocation,
-                style: const TextStyle(
-                  fontSize: 14.0,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.keyboard_arrow_down, size: 30.0,),
-              onPressed: () {
-                // ----------------------------- location update
-              },
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const SellerAccount()),
-                );
-              },
-              child: CircleAvatar(
-                radius: 18,
-                backgroundImage: AssetImage(_profileImage),
-              ),
-            ),
-          ],
-        ),
-        leading: PopupMenuButton(
-          icon: const Icon(Icons.menu),
-          itemBuilder: (BuildContext context) =>
-          [
-            PopupMenuItem(
-              value: 'buyer-mode',
-              child: Row(
-                children: [
-                  Icon(Icons.switch_account,
-                    color: _orangeColor,),
-                  const SizedBox(width: 10.0,),
-                  const Text('Buyer',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold
-                    ),
+    if (isLoading == false) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Row(
+            children: [
+              Icon(Icons.location_on_outlined, color: _orangeColor,),
+              const SizedBox(width: 5.0,),
+              Expanded(
+                child: Text(
+                  locationName!,
+                  style: const TextStyle(
+                    fontSize: 14.0,
                   ),
-                ],
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-            PopupMenuItem(
-              value: 'rider-mode',
-              child: Row(
-                children: [
-                  Icon(Icons.motorcycle_sharp, color: _orangeColor,),
-                  const SizedBox(width: 10.0,),
-                  const Text(
-                      'Rider', style: TextStyle(fontWeight: FontWeight.bold)),
-                ],
+              // IconButton(
+              //   icon: const Icon(Icons.keyboard_arrow_down, size: 30.0,),
+              //   onPressed: () {
+              //     // ----------------------------- location update
+              //   },
+              // ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const UserAccount()),
+                  );
+                },
+                child: profilePhoto == '' ?
+                CircleAvatar(
+                  radius: 18,
+                  backgroundImage: AssetImage(_profileImage),
+                ) : CircleAvatar(
+                  radius: 18,
+                  backgroundImage: NetworkImage(profilePhoto),
+                ) ,
               ),
-            ),
-            PopupMenuItem(
-              value: 'logout',
-              child: Row(
-                children: [
-                  Icon(Icons.logout, color: _orangeColor,),
-                  const SizedBox(width: 10.0,),
-                  const Text('LogOut',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ],
+            ],
+          ),
+          leading: PopupMenuButton(
+            icon: const Icon(Icons.menu),
+            itemBuilder: (BuildContext context) =>
+            [
+              PopupMenuItem(
+                value: 'buyer-mode',
+                child: Row(
+                  children: [
+                    Icon(Icons.switch_account,
+                      color: _orangeColor,),
+                    const SizedBox(width: 10.0,),
+                    const Text('Buyer',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-          onSelected: (String value) {
-            if (value == 'buyer-mode') {
-              dev.log('buyer-mode');
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-                return const HomeScreenBuyer();
-              }));
-            } else if (value == 'rider-mode') {
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) {
-                return const HomeScreenRider();
-              }));
-              dev.log('rider-mode');
-            } else if (value == 'logout') {
-              dev.log('logout');
-              _auth_service.signOut();
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) {
-                return const SignIn();
-              }));
-            }
-            setState(() {
-              _orangeColor = Colors.orange.shade800;
-            });
-          },
+              PopupMenuItem(
+                value: 'rider-mode',
+                child: Row(
+                  children: [
+                    Icon(Icons.motorcycle_sharp, color: _orangeColor,),
+                    const SizedBox(width: 10.0,),
+                    const Text(
+                        'Rider', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, color: _orangeColor,),
+                    const SizedBox(width: 10.0,),
+                    const Text('LogOut',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ),
+            ],
+            onSelected: (String value) {
+              if (value == 'buyer-mode') {
+                dev.log('buyer-mode');
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) {
+                  return const HomeScreenBuyer();
+                }));
+              } else if (value == 'rider-mode') {
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) {
+                  return const HomeScreenRider();
+                }));
+                dev.log('rider-mode');
+              } else if (value == 'logout') {
+                dev.log('logout');
+                _auth_service.signOut();
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) {
+                  return const SignIn();
+                }));
+              }
+              setState(() {
+                _orangeColor = Colors.orange.shade800;
+              });
+            },
 
+          ),
         ),
-      ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: Database_Service(userId: _auth_service.getUserId()).fetchAllProductsOfSeller(),
-        builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Loading_Screen();
-          } else {
-            if (snapshot.hasError) {
-              // If an error occurs, display an error message
-              return Center(
-                child: Text('Error: ${snapshot.error}'),
-              );
+
+        body: isSeller ? FutureBuilder<List<Map<String, dynamic>>>(
+          future: Database_Service(userId: _auth_service.getUserId())
+              .fetchAllProductsOfSeller(),
+          builder: (BuildContext context,
+              AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Loading_Screen();
             } else {
-              List<Map<String, dynamic>> products = snapshot.data ?? [];
-              bool isSeller = products.isNotEmpty;
-              if (isSeller) {
-                // Return a GridView to display products
+              if (snapshot.hasError) {
+                // If an error occurs, display an error message
+                return Center(
+                  child: Text('Error: ${snapshot.error}'),
+                );
+              } else {
+                List<Map<String, dynamic>> products = snapshot.data ?? [];
                 return Stack(
                   children: [
                     Padding(
@@ -165,13 +237,31 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          storeName != null ?
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 10.0),
+                            decoration: BoxDecoration(
+                              color: _orangeColor,
+                              borderRadius: BorderRadius.circular(20.0), // Adjust the radius for smoother edges
+                            ),
+                            child: Center(
+                              child: Text(
+                                storeName!,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18.0,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ) : Container(),
                           const Padding(
                             padding: EdgeInsets.all(8.0),
                             child: Text('Your Products',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18.0,
-                            ),),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18.0,
+                              ),),
                           ),
                           Expanded(
                             child: GridView.builder(
@@ -183,21 +273,28 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
                                 childAspectRatio: 0.7, // Aspect ratio for better layout
                               ),
                               itemBuilder: (context, index) {
-                                Map<String, dynamic> product = products[index];
+                                Map<String,
+                                    dynamic> product = products[index];
                                 return Card(
-                                  elevation: 4, // Add elevation for a shadow effect
+                                  elevation: 4,
+                                  // Add elevation for a shadow effect
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0), // Rounded corners
+                                    borderRadius: BorderRadius.circular(
+                                        10.0), // Rounded corners
                                   ),
                                   color: Colors.white,
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start,
                                     children: [
                                       // Display product image (assuming 'images' is a list of image URLs)
                                       ClipRRect(
-                                        borderRadius: const BorderRadius.vertical(top: Radius.circular(10.0)),
+                                        borderRadius: const BorderRadius
+                                            .vertical(
+                                            top: Radius.circular(10.0)),
                                         child: Image.network(
-                                          product['images'][0], // Assuming the first image URL is used
+                                          product['images'][0],
+                                          // Assuming the first image URL is used
                                           width: double.infinity,
                                           height: 105.0,
                                           fit: BoxFit.cover,
@@ -206,7 +303,8 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
                                       Padding(
                                         padding: const EdgeInsets.all(3.0),
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment
+                                              .start,
                                           children: [
                                             Text(
                                               product['product-name'],
@@ -237,111 +335,130 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
                       bottom: 20,
                       right: 20,
                       child: ElevatedButton(
-                          onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) {
-                              return const ManageStore();
-                            }));
-                          },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _orangeColor,
-                        padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0)
-                      ),
-                          child:  const Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Icon(Icons.store,
+                        onPressed: () {
+                          Navigator.push(
+                              context, MaterialPageRoute(builder: (context) {
+                            return const ManageStore();
+                          }));
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: _orangeColor,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20.0, vertical: 10.0)
+                        ),
+                        child:   Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            CircleAvatar(
+                              radius: 16, // Adjust the size of the circle avatar as needed
+                              backgroundImage: NetworkImage(storeImageLink!),
+                            ),
+                            const SizedBox(width: 8.0),
+                            const Icon(Icons.store,
                               color: Colors.white,),
-                              SizedBox(width: 2.0,),
-                              Text('Manage',
-                                style: TextStyle(
+                            const SizedBox(width: 2.0,),
+                            const Text('Manage',
+                              style: TextStyle(
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white
-                                ),
                               ),
-                            ],
-                          ),),
+                            ),
+                          ],
+                        ),),
                     )
                   ],
                 );
               }
-              else {
-                dev.log('You are not a seller'); // open store now
-                return Center(
-                  child: Container(
-                    width: 280.0,
-                    height: 120.0,
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0,
-                        vertical: 10.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25.0),
-                      color: Colors.grey.shade300,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.store,
-                              color: _orangeColor,
-                              size: 30.0,),
-                            const SizedBox(width: 10.0,),
-                            const Text('Open your Store Now', style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15.0
-                            ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10.0,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                Database_Service(userId: _auth_service.getUserId()).createSellerMode();
-                                setState(() {});
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.orange,
-                              ),
-                              child: const Text('Open Store',
-                                style: TextStyle(color: Colors.white,),
-                              ),
-                            ),
-                            const SizedBox(width: 10.0,),
-                            ElevatedButton(
-                              onPressed: () {
-                                if(previousScreen == 'homeBuyer') {
-                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-                                    return const HomeScreenBuyer();
-                                  }));
-                                } else if(previousScreen == 'homeRider') {
-                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-                                    return const HomeScreenRider();
-                                  }));
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red
-                              ),
-                              child: const Text('Cancel',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                );
-              }
             }
-          }
-        },
-      ),
-    );
+          },
+        ) : Center(
+          child: Container(
+            width: 280.0,
+            height: 120.0,
+            padding: const EdgeInsets.symmetric(horizontal: 20.0,
+                vertical: 10.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(25.0),
+              color: Colors.grey.shade300,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.store,
+                      color: _orangeColor,
+                      size: 30.0,),
+                    const SizedBox(width: 10.0,),
+                    const Text(
+                      'Open your Store Now', style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15.0
+                    ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10.0,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        // redirect to page first for adding necessary details of the store -------------------
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                              return const OpenStore();
+                            }));
+                        //Database_Service(userId: _auth_service.getUserId()).createSellerMode();
+                        setState(() {});
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                      ),
+                      child: const Text('Open Store',
+                        style: TextStyle(color: Colors.white,),
+                      ),
+                    ),
+                    const SizedBox(width: 10.0,),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (previousScreen == 'homeBuyer') {
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (context) {
+                                return const HomeScreenBuyer();
+                              }));
+                        } else if (previousScreen == 'homeRider') {
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (context) {
+                                return const HomeScreenRider();
+                              }));
+                        } else if (previousScreen == 'userAccount') {
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (context) {
+                                return const UserAccount();
+                              }));
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red
+                      ),
+                      child: const Text('Cancel',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+
+      );
+    } else {
+      return const Loading_Screen();
+    }
   }
 }

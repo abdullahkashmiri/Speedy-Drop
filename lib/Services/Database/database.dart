@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:path/path.dart' as Path;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
@@ -30,20 +31,26 @@ class Database_Service {
   // -------------------------------------------------------------------------------------------------
   // Functions
 
-  // Initialize user data on the cloud used when user account is created.
+
   Future<bool> initializeUserDataOnCloud(String userId, String userName,
-      String email, String password) async {
+      String email, String password,) async {
     try {
+      LatLng defaultLocation = LatLng(0.0, 0.0);
+
       await accountsCollection.doc(userId).set({
         'user-id': userId,
         'user-name': userName,
         'email': email,
         'password': password,
         'phone-number': '',
-        'address': '',
+        'address': {
+          'latitude': defaultLocation.latitude,
+          'longitude': defaultLocation.longitude,
+        },
         'isBuyer': true,
         'isSeller': false,
         'isRider': false,
+        'profileImage': ''
       });
       return true; // Return true if the operation succeeds
     } catch (e) {
@@ -51,6 +58,7 @@ class Database_Service {
       return false; // Return false if an error occurs
     }
   }
+
 
   // Checking is seller mode exists.
   Future<bool> isUserASeller() async {
@@ -79,8 +87,29 @@ class Database_Service {
   }
 
   // Creating seller mode
-  Future<bool> createSellerMode() async {
+  Future<bool> createSellerMode(String storeName, String storeDescription,
+      List<String> selectedDays, String openingHours, String closingHours, LatLng storeLocation,
+      String contactNumber, File storeImage) async {
     try {
+      String ownerId = userId;
+      String storeImageLink = await uploadStoreImage(storeImage);
+      await storeCollection.doc(userId).set({
+        'owner-id': ownerId,
+        'store-details': {
+          'store-name': storeName,
+          'store-description': storeDescription,
+          'selectedDays': selectedDays,
+          'openingHours': openingHours,
+          'closingHours': closingHours,
+          'address': {
+            'latitude': storeLocation.latitude,
+            'longitude': storeLocation.longitude,
+          },
+          'contact-number': contactNumber,
+          'store-image': storeImageLink,
+        },
+      }, SetOptions(merge: true));
+
       await accountsCollection.doc(userId).update({
         'isSeller': true,
       });
@@ -151,8 +180,6 @@ class Database_Service {
 
 
 
-
-
   // Fetching all products of a seller
   Future<List<Map<String, dynamic>>> fetchAllProductsOfSeller() async {
     List<Map<String, dynamic>> allProducts = [];
@@ -186,8 +213,147 @@ class Database_Service {
     return allProducts;
   }
 
+  Future<Map<String, dynamic>?> fetchUserDataFromCloud() async {
+    try {
+      print('Fetching user data from cloud');
+      // Get the document snapshot from Firestore
+      DocumentSnapshot<Object?> snapshot =
+      await accountsCollection.doc(userId).get();
+
+      if (snapshot.exists) {
+        // Convert the snapshot data to a map
+        Map<String, dynamic>? userData = snapshot.data() as Map<String, dynamic>?;
+        return userData;
+      } else {
+        // Document doesn't exist
+        log('User document not found in Firestore');
+        return null;
+      }
+    } catch (e) {
+      // Error occurred while fetching user data
+      log('Error occurred while fetching user data: $e');
+      return null;
+    }
+  }
 
 
+  // Upload images of product
+  Future<String> uploadProfileImage(File image) async {
+    String downloadUrl = '';
+    try {
+      File imageFile = image;
+      String fileName = Path.basename(imageFile.path);
+      Reference imageReference = FirebaseStorage.instance.ref().child(
+          'profile/$userId/$fileName');
+      UploadTask uploadTask = imageReference.putFile(imageFile);
+      await uploadTask;
+      if (uploadTask.snapshot.state == TaskState.success) {
+        downloadUrl = await imageReference.getDownloadURL();
+      } else {
+        log('Failed to upload image ');
+      }
+    } catch (e) {
+      log('Error uploading images: $e');
+    }
+    return downloadUrl;
+  }
+
+
+
+  Future<bool> updateUserDataOnCloud(String userName, String phoneNumber, LatLng markerLocation, String profileImage,
+      ) async {
+    try {
+      await accountsCollection.doc(userId).update({
+        'user-name': userName,
+        'phone-number': phoneNumber,
+        'address': {
+          'latitude': markerLocation.latitude,
+          'longitude': markerLocation.longitude,
+        },
+        'profileImage': profileImage,
+      });
+      return true; // Return true if the operation succeeds
+    } catch (e) {
+      log('Error Occurred while updating user data on cloud : $e');
+      return false; // Return false if an error occurs
+    }
+  }
+
+  Future<String> getPhoneNumberOfUser() async {
+    try {
+      DocumentSnapshot doc = await accountsCollection.doc(userId).get();
+      // Check if the phone number exists in the document
+      if (doc.exists && doc['phone-number'] != '') {
+        return  doc['phone-number'];
+      } else {
+        return '';
+      }
+    } catch (e) {
+      return '';
+    }
+  }
+
+
+  // Upload images of product
+  Future<String> uploadStoreImage(File image) async {
+    String downloadUrl = '';
+    try {
+      File imageFile = image;
+      String fileName = Path.basename(imageFile.path);
+      Reference imageReference = FirebaseStorage.instance.ref().child(
+          'store/$userId/$fileName');
+      UploadTask uploadTask = imageReference.putFile(imageFile);
+      await uploadTask;
+      if (uploadTask.snapshot.state == TaskState.success) {
+        downloadUrl = await imageReference.getDownloadURL();
+      } else {
+        log('Failed to upload image ');
+      }
+    } catch (e) {
+      log('Error uploading images: $e');
+    }
+    return downloadUrl;
+  }
+
+
+
+  Future<Map<String, dynamic>?> fetchStoreData() async {
+    try {
+      DocumentSnapshot<Object?> snapshot =
+      await storeCollection.doc(userId).get();
+
+      if (snapshot.exists) {
+        // Convert the snapshot data to a map
+        Map<String, dynamic>? storeData = snapshot.data() as Map<String, dynamic>?;
+        return storeData;
+      } else {
+        // Document doesn't exist
+        print('Store document not found in Firestore');
+        return null;
+      }
+    } catch (e) {
+      // Error occurred while fetching store data
+      print('Error occurred while fetching store data: $e');
+      return null;
+    }
+  }
+
+
+
+
+  Future<String> fetchUserProfilePhoto() async {
+    try {
+      DocumentSnapshot doc = await accountsCollection.doc(userId).get();
+      // Check if the phone number exists in the document
+      if (doc.exists && doc['profileImage'] != '') {
+        return  doc['profileImage'];
+      } else {
+        return '';
+      }
+    } catch (e) {
+      return '';
+    }
+  }
 
 
 }

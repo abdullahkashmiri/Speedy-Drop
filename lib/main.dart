@@ -6,6 +6,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:speedydrop/Services/Auth/auth.dart';
 import 'package:speedydrop/firebase_options.dart';
 
+import 'Screens/Maps/map_screen.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -30,6 +32,9 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         debugShowCheckedModeBanner: false,
+        // home: const MapScreen(),
+
+
         home: const Splash_Screen(),
       ),
     );
