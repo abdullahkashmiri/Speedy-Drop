@@ -6,7 +6,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:speedydrop/Services/Auth/auth.dart';
 import 'package:speedydrop/firebase_options.dart';
 
-import 'Screens/Maps/map_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

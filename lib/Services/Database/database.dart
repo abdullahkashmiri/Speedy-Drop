@@ -92,6 +92,7 @@ class Database_Service {
       String contactNumber, File storeImage) async {
     try {
       String ownerId = userId;
+      int sales = 0;
       String storeImageLink = await uploadStoreImage(storeImage);
       await storeCollection.doc(userId).set({
         'owner-id': ownerId,
@@ -107,6 +108,7 @@ class Database_Service {
           },
           'contact-number': contactNumber,
           'store-image': storeImageLink,
+          'sales' : sales
         },
       }, SetOptions(merge: true));
 
@@ -178,8 +180,6 @@ class Database_Service {
   }
 
 
-
-
   // Fetching all products of a seller
   Future<List<Map<String, dynamic>>> fetchAllProductsOfSeller() async {
     List<Map<String, dynamic>> allProducts = [];
@@ -236,7 +236,6 @@ class Database_Service {
     }
   }
 
-
   // Upload images of product
   Future<String> uploadProfileImage(File image) async {
     String downloadUrl = '';
@@ -257,8 +256,6 @@ class Database_Service {
     }
     return downloadUrl;
   }
-
-
 
   Future<bool> updateUserDataOnCloud(String userName, String phoneNumber, LatLng markerLocation, String profileImage,
       ) async {
@@ -293,7 +290,6 @@ class Database_Service {
     }
   }
 
-
   // Upload images of product
   Future<String> uploadStoreImage(File image) async {
     String downloadUrl = '';
@@ -314,7 +310,6 @@ class Database_Service {
     }
     return downloadUrl;
   }
-
 
 
   Future<Map<String, dynamic>?> fetchStoreData() async {
@@ -339,8 +334,6 @@ class Database_Service {
   }
 
 
-
-
   Future<String> fetchUserProfilePhoto() async {
     try {
       DocumentSnapshot doc = await accountsCollection.doc(userId).get();
@@ -352,6 +345,33 @@ class Database_Service {
       }
     } catch (e) {
       return '';
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchAllStoreData() async {
+    try {
+      QuerySnapshot<Object?> snapshot = await storeCollection.get();
+
+      Map<String, dynamic> allStoreData = {};
+
+      for (DocumentSnapshot<Object?> doc in snapshot.docs) {
+        if (doc.exists) {
+          // Convert the snapshot data to a map
+          Map<String, dynamic>? userData = doc.data() as Map<String, dynamic>?;
+
+          // Add the user data to the map using user ID as the key
+          if (userData != null) {
+            String userId = doc.id;
+            allStoreData[userId] = userData;
+          }
+        }
+      }
+
+      return allStoreData;
+    } catch (e) {
+      // Error occurred while fetching store data
+      print('Error occurred while fetching store data: $e');
+      return {};
     }
   }
 

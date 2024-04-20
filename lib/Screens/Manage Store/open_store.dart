@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:speedydrop/Screens/Home/homeSeller.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Services/Database/database.dart';
 import '../../../Services/Auth/auth.dart';
@@ -545,7 +546,13 @@ class _OpenStoreState extends State<OpenStore> {
                                 storeImage!);
                             if (isStoreAdded == true) {
                               dev.log('Store created SuccessFully');
-                              Navigator.pop(context);
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (context) => HomeScreenSeller(previousScreen: 'home-screen')),
+                                    (route) => false, // Remove all routes in the stack
+                              );
+
+
                               isLoading = false;
                               setState(() {
 
