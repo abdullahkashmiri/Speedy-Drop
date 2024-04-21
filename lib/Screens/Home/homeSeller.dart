@@ -296,7 +296,7 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
                                           product['images'][0],
                                           // Assuming the first image URL is used
                                           width: double.infinity,
-                                          height: 105.0,
+                                          height: 90.0,
                                           fit: BoxFit.cover,
                                         ),
                                       ),
@@ -312,6 +312,16 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
                                                 fontSize: 12.0,
                                                 fontWeight: FontWeight.bold,
                                               ),
+                                            ),
+                                            Text(
+                                              '${product['category']}',
+                                              style: TextStyle(
+                                                  fontSize: 10.0,
+                                                  color: _orangeColor,
+                                                  fontWeight: FontWeight.bold
+                                              ),
+                                              maxLines: 1, // Display only one line
+                                              overflow: TextOverflow.ellipsis,
                                             ),
                                             Text(
                                               'Price: ${product['price']}',

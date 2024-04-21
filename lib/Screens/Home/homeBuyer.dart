@@ -5,11 +5,13 @@ import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:speedydrop/Screens/Account/user_account.dart';
 import 'package:speedydrop/Screens/Authentication/Sign%20In/signin.dart';
+import 'package:speedydrop/Screens/Cart/cart_screen.dart';
 import 'package:speedydrop/Screens/Home/homeSeller.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Screens/Manage%20Store/All%20Stores/all_stores.dart';
 import 'package:speedydrop/Services/Auth/auth.dart';
 import 'package:speedydrop/Services/Database/database.dart';
+import '../Cart/display_cart_screen.dart';
 import '../Products/All Products In Store/productsInStore.dart';
 import 'homeRider.dart';
 import 'package:geolocator/geolocator.dart';
@@ -34,110 +36,6 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
   final Auth_Service _auth_service = Auth_Service();
   String _currentAddress = '';
   String _profileImage = 'assets/images/speedyLogov1.png';
-  final List<Map<String, String>> itemList = [
-    {
-      "name": 'Nike',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'Adidas',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'Apple',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'Samsung',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'Gucci',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'Louis Vuitton',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'H&M',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'Zara',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'Amazon',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'Sony',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-  ];
-  final List<Map<String, dynamic>> itemList2 = [
-    {
-      "name": 'Nike',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.5,
-      "category": "Sports"
-    },
-    {
-      "name": 'Adidas',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.3,
-      "category": "Sports"
-    },
-    {
-      "name": 'Apple',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.8,
-      "category": "Electronics"
-    },
-    {
-      "name": 'Samsung',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.4,
-      "category": "Electronics"
-    },
-    {
-      "name": 'Gucci',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.7,
-      "category": "Fashion"
-    },
-    {
-      "name": 'Louis Vuitton',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.9,
-      "category": "Fashion"
-    },
-    {
-      "name": 'H&M',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.2,
-      "category": "Fashion"
-    },
-    {
-      "name": 'Zara',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.6,
-      "category": "Fashion"
-    },
-    {
-      "name": 'Amazon',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.8,
-      "category": "Online Store"
-    },
-    {
-      "name": 'Sony',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.5,
-      "category": "Electronics"
-    },
-  ];
   int _currentIndex = 0;
   String profilePhoto = '';
   String _userName = '';
@@ -387,10 +285,17 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                     Icons.shopping_basket,
                     color: Colors.white,
                   ),
-                ) : const Icon(
-                  Icons.shopping_basket,
-                  color: Colors.grey,
-                  size: 30.0,
+                ) : GestureDetector(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return const DisplayCartScreen();
+                    }));
+                  },
+                  child: const Icon(
+                    Icons.shopping_basket,
+                    color: Colors.grey,
+                    size: 30.0,
+                  ),
                 ),
                 label: '',
               ),
@@ -519,7 +424,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                                 print('More button pressed');
                                 Navigator.pushReplacement(context,
                                     MaterialPageRoute(builder: (context) {
-                                      return AllStore();
+                                      return AllStoreScreen();
                                     }));
                               },
                               child: Text(
@@ -642,8 +547,9 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                               bool withinRadius = isWithinRadius(
                                   latitude, longitude, lat, long, 50.0);
                               if (isDaySelected && isOpen && withinRadius) {
-                                double deliveryTime = calculateRadius(
+                                double val = calculateRadius(
                                     latitude, longitude, lat, long) * 8;
+                                int deliveryTime = val.toInt();
                                 if (deliveryTime < 30) {
                                   deliveryTime = 30;
                                 }
@@ -728,7 +634,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                                 print('More button pressed');
                                 Navigator.pushReplacement(context,
                                     MaterialPageRoute(builder: (context) {
-                                      return AllStore();
+                                      return AllStoreScreen();
                                     }));
                               },
                               child: Text(
@@ -798,8 +704,9 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
 
                               if (isDaySelected && isOpen &&
                                   sales > popularStoreMinSales) {
-                                double deliveryTime = calculateRadius(
+                                double val = calculateRadius(
                                     latitude, longitude, lat, long) * 8;
+                                int deliveryTime = val.toInt();
                                 if (deliveryTime < 30) {
                                   deliveryTime = 30;
                                 }
@@ -862,6 +769,8 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                                                     ),
                                                     Text(
                                                       storeDesc,
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow.ellipsis,
                                                       style: const TextStyle(
                                                           color: Colors.grey),
                                                     ),
@@ -889,19 +798,19 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                                                       .withOpacity(0.5),
                                                   spreadRadius: 1,
                                                   blurRadius: 3,
-                                                  offset: Offset(0,
+                                                  offset: const Offset(0,
                                                       2), // changes position of shadow
                                                 ),
                                               ],
                                             ),
-                                            padding: EdgeInsets.symmetric(
+                                            padding: const EdgeInsets.symmetric(
                                                 vertical: 2, horizontal: 6),
                                             child: Row(
                                               children: [
                                                 Text(
                                                   '($sales)'.toString() ??
                                                       'N/A',
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                       color: Colors.black,
                                                       fontWeight: FontWeight
                                                           .bold),

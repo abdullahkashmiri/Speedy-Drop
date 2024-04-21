@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:speedydrop/Screens/Account/user_account.dart';
 import 'package:speedydrop/Screens/Authentication/Sign%20In/signin.dart';
-import 'package:speedydrop/Screens/Home/homeSeller.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Screens/Products/All%20Products%20In%20Store/productsInStore.dart';
 import 'package:speedydrop/Services/Auth/auth.dart';
@@ -14,128 +13,23 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../Home/homeRider.dart';
+import '../../Home/homeBuyer.dart';
 
 
-
-class AllStore extends StatefulWidget {
-  const AllStore({super.key});
+class AllStoreScreen extends StatefulWidget {
+  const AllStoreScreen({super.key});
 
   @override
-  State<AllStore> createState() => _AllStoreState();
+  State<AllStoreScreen> createState() => _AllStoreScreenState();
 }
 
-class _AllStoreState extends State<AllStore> {
+class _AllStoreScreenState extends State<AllStoreScreen> {
 
   //Variables
   Color _orangeColor = Colors.orange.shade800;
   final Auth_Service _auth_service = Auth_Service();
   String _currentAddress = '';
   String _profileImage = 'assets/images/speedyLogov1.png';
-  final List<Map<String, String>> itemList = [
-    {
-      "name": 'Nike',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'Adidas',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'Apple',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'Samsung',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'Gucci',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'Louis Vuitton',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'H&M',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'Zara',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'Amazon',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-    {
-      "name": 'Sony',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg'
-    },
-  ];
-  final List<Map<String, dynamic>> itemList2 = [
-    {
-      "name": 'Nike',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.5,
-      "category": "Sports"
-    },
-    {
-      "name": 'Adidas',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.3,
-      "category": "Sports"
-    },
-    {
-      "name": 'Apple',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.8,
-      "category": "Electronics"
-    },
-    {
-      "name": 'Samsung',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.4,
-      "category": "Electronics"
-    },
-    {
-      "name": 'Gucci',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.7,
-      "category": "Fashion"
-    },
-    {
-      "name": 'Louis Vuitton',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.9,
-      "category": "Fashion"
-    },
-    {
-      "name": 'H&M',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.2,
-      "category": "Fashion"
-    },
-    {
-      "name": 'Zara',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.6,
-      "category": "Fashion"
-    },
-    {
-      "name": 'Amazon',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.8,
-      "category": "Online Store"
-    },
-    {
-      "name": 'Sony',
-      "imageUrl": 'https://st3.depositphotos.com/10665628/32088/v/1600/depositphotos_320884562-stock-illustration-supermarket-building-entrance-concept-vector.jpg',
-      "rating": 4.5,
-      "category": "Electronics"
-    },
-  ];
   String profilePhoto = '';
   bool isLoading = true;
   String userId = '';
@@ -276,28 +170,7 @@ class _AllStoreState extends State<AllStore> {
                 ],
               ),
             ),
-            PopupMenuItem(
-              value: 'seller-mode',
-              child: Row(
-                children: [
-                  Icon(Icons.store, color: _orangeColor,),
-                  const SizedBox(width: 10.0,),
-                  const Text('Seller',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ],
-              ),
-            ),
-            PopupMenuItem(
-              value: 'rider-mode',
-              child: Row(
-                children: [
-                  Icon(Icons.motorcycle_sharp, color: _orangeColor,),
-                  const SizedBox(width: 10.0,),
-                  const Text(
-                      'Rider', style: TextStyle(fontWeight: FontWeight.bold)),
-                ],
-              ),
-            ),
+
             PopupMenuItem(
               value: 'logout',
               child: Row(
@@ -315,21 +188,9 @@ class _AllStoreState extends State<AllStore> {
               dev.log('buyer-mode');
               Navigator.pushReplacement(
                   context, MaterialPageRoute(builder: (context) {
-                return const HomeScreenSeller(previousScreen: 'allStore',);
+                return const HomeScreenBuyer();
               }));
-            } else if (value == 'seller-mode') {
-              dev.log('seller-mode');
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) {
-                return const HomeScreenSeller(previousScreen: 'homeBuyer',);
-              }));
-            } else if (value == 'rider-mode') {
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) {
-                return const HomeScreenRider();
-              }));
-              dev.log('rider-mode');
-            } else if (value == 'logout') {
+            }  else if (value == 'logout') {
               dev.log('logout');
               _auth_service.signOut();
               Navigator.pushReplacement(
@@ -358,51 +219,50 @@ class _AllStoreState extends State<AllStore> {
               if (allStoreData == null || allStoreData.isEmpty) {
                 return const Center(child: Text('No store data available.'));
               } else {
-                return SingleChildScrollView(
-                  child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(20), // Rounded corners
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2), // Shadow color
-                            spreadRadius: 2, // Spread radius
-                            blurRadius: 5, // Blur radius
-                            offset: const Offset(0, 2), // Shadow position
-                          ),
-                        ],
-                      ),
-                      margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 10.0,),
-                              RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: 'Stores',
-                                      style: TextStyle(
-                                          color: _orangeColor,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 25.0
-                                      ),
+                return Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(20), // Rounded corners
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2), // Shadow color
+                          spreadRadius: 2, // Spread radius
+                          blurRadius: 5, // Blur radius
+                          offset: const Offset(0, 2), // Shadow position
+                        ),
+                      ],
+                    ),
+                    margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 10.0,),
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Stores',
+                                    style: TextStyle(
+                                        color: _orangeColor,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 25.0
                                     ),
-                                    const TextSpan(
-                                      text: ' Currently Open!',
-                                      style: TextStyle(
-                                          fontSize: 20.0,
-                                          color: Colors.black
-                                      ),
+                                  ),
+                                  const TextSpan(
+                                    text: ' Currently Open!',
+                                    style: TextStyle(
+                                        fontSize: 20.0,
+                                        color: Colors.black
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 10.0,),
-                              ListView.builder(
-                                shrinkWrap: true, // Add this line
+                            ),
+                            const SizedBox(height: 10.0,),
+                            Expanded(
+                              child: ListView.builder(
                                 scrollDirection: Axis.vertical,
                                 itemCount: allStoreData.length,
                                 itemBuilder: (context, index) {
@@ -420,7 +280,7 @@ class _AllStoreState extends State<AllStore> {
                                   var contactNum = userData['store-details']['contact-number'];
                                   var storeImgLink = userData['store-details']['store-image'];
                                   var sales = userData['store-details']['sales'];
-
+                                              
                                   // Get the current date and time
                                   DateTime now = DateTime.now();
                                   String dayAbbreviation = DateFormat.E().format(now); // "E" gives the abbreviated day name
@@ -438,11 +298,12 @@ class _AllStoreState extends State<AllStore> {
                                     isOpen = true;
                                   }
                                   double storeRadius = double.parse(calculateRadius(latitude, longitude, lat, long).toStringAsFixed(1));
-                                  double deliveryTime = storeRadius * 8;
+                                  double val = storeRadius * 8;
+                                  int deliveryTime = val.toInt();
                                   if(deliveryTime < 30){
                                     deliveryTime = 30;
                                   }
-
+                                              
                                   if (isDaySelected && isOpen) {
                                     return Container(
                                       margin: const EdgeInsets.symmetric(vertical: 5.0),
@@ -476,6 +337,8 @@ class _AllStoreState extends State<AllStore> {
                                         ),
                                         title: Text(
                                           storeName,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                           style: const TextStyle(
                                             color: Colors.black,
                                             fontWeight: FontWeight.w500,
@@ -483,6 +346,8 @@ class _AllStoreState extends State<AllStore> {
                                         ),
                                         subtitle: Text(
                                           storeDesc,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 3,
                                           style: const TextStyle(
                                             color: Colors.grey,
                                           ),
@@ -525,10 +390,10 @@ class _AllStoreState extends State<AllStore> {
                                   }
                                 },
                               ),
-                            ]
-                        ),
-                      )
-                  ),
+                            ),
+                          ]
+                      ),
+                    )
                 );
               }
             }

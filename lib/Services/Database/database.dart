@@ -31,7 +31,6 @@ class Database_Service {
   // -------------------------------------------------------------------------------------------------
   // Functions
 
-
   Future<bool> initializeUserDataOnCloud(String userId, String userName,
       String email, String password,) async {
     try {
@@ -59,8 +58,6 @@ class Database_Service {
     }
   }
 
-
-  // Checking is seller mode exists.
   Future<bool> isUserASeller() async {
     try {
       DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
@@ -86,10 +83,9 @@ class Database_Service {
     }
   }
 
-  // Creating seller mode
   Future<bool> createSellerMode(String storeName, String storeDescription,
-      List<String> selectedDays, String openingHours, String closingHours, LatLng storeLocation,
-      String contactNumber, File storeImage) async {
+      List<String> selectedDays, String openingHours, String closingHours,
+      LatLng storeLocation, String contactNumber, File storeImage) async {
     try {
       String ownerId = userId;
       int sales = 0;
@@ -108,7 +104,7 @@ class Database_Service {
           },
           'contact-number': contactNumber,
           'store-image': storeImageLink,
-          'sales' : sales
+          'sales': sales
         },
       }, SetOptions(merge: true));
 
@@ -122,7 +118,6 @@ class Database_Service {
     }
   }
 
-  // Creating a new product
   Future<bool> createNewProduct(List<File> images, String productName,
       String description, double price, int quantity, String category) async {
     try {
@@ -130,7 +125,7 @@ class Database_Service {
       List<String> imagesUrls = await uploadImagesOfProduct(
           images, uniqueProductId); // Upload images and get URLs
       if (imagesUrls.isNotEmpty) {
-        await storeCollection.doc(userId).collection(category).add({
+        await storeCollection.doc(userId).collection(category).doc(uniqueProductId).set({
           'product-id': uniqueProductId,
           'vendor-id': userId,
           'product-name': productName,
@@ -150,7 +145,6 @@ class Database_Service {
     }
   }
 
-  // Upload images of product
   Future<List<String>> uploadImagesOfProduct(List<File> images,
       String uniqueProductId) async {
     List<String> downloadUrls = [];
@@ -179,15 +173,15 @@ class Database_Service {
     return downloadUrls;
   }
 
-
-  // Fetching all products of a seller
   Future<List<Map<String, dynamic>>> fetchAllProductsOfSeller() async {
     List<Map<String, dynamic>> allProducts = [];
 
     try {
       for (String category in categories) {
         // Fetch all documents within the current category subcollection
-        QuerySnapshot querySnapshot = await storeCollection.doc(userId).collection(category).get();
+        QuerySnapshot querySnapshot = await storeCollection.doc(userId)
+            .collection(category)
+            .get();
 
         // Iterate over each document in the category subcollection
         for (QueryDocumentSnapshot doc in querySnapshot.docs) {
@@ -222,7 +216,8 @@ class Database_Service {
 
       if (snapshot.exists) {
         // Convert the snapshot data to a map
-        Map<String, dynamic>? userData = snapshot.data() as Map<String, dynamic>?;
+        Map<String, dynamic>? userData = snapshot.data() as Map<String,
+            dynamic>?;
         return userData;
       } else {
         // Document doesn't exist
@@ -236,7 +231,6 @@ class Database_Service {
     }
   }
 
-  // Upload images of product
   Future<String> uploadProfileImage(File image) async {
     String downloadUrl = '';
     try {
@@ -257,8 +251,8 @@ class Database_Service {
     return downloadUrl;
   }
 
-  Future<bool> updateUserDataOnCloud(String userName, String phoneNumber, LatLng markerLocation, String profileImage,
-      ) async {
+  Future<bool> updateUserDataOnCloud(String userName, String phoneNumber,
+      LatLng markerLocation, String profileImage,) async {
     try {
       await accountsCollection.doc(userId).update({
         'user-name': userName,
@@ -281,7 +275,7 @@ class Database_Service {
       DocumentSnapshot doc = await accountsCollection.doc(userId).get();
       // Check if the phone number exists in the document
       if (doc.exists && doc['phone-number'] != '') {
-        return  doc['phone-number'];
+        return doc['phone-number'];
       } else {
         return '';
       }
@@ -290,7 +284,6 @@ class Database_Service {
     }
   }
 
-  // Upload images of product
   Future<String> uploadStoreImage(File image) async {
     String downloadUrl = '';
     try {
@@ -311,7 +304,6 @@ class Database_Service {
     return downloadUrl;
   }
 
-
   Future<Map<String, dynamic>?> fetchStoreData() async {
     try {
       DocumentSnapshot<Object?> snapshot =
@@ -319,7 +311,8 @@ class Database_Service {
 
       if (snapshot.exists) {
         // Convert the snapshot data to a map
-        Map<String, dynamic>? storeData = snapshot.data() as Map<String, dynamic>?;
+        Map<String, dynamic>? storeData = snapshot.data() as Map<String,
+            dynamic>?;
         return storeData;
       } else {
         // Document doesn't exist
@@ -333,13 +326,12 @@ class Database_Service {
     }
   }
 
-
   Future<String> fetchUserProfilePhoto() async {
     try {
       DocumentSnapshot doc = await accountsCollection.doc(userId).get();
       // Check if the phone number exists in the document
       if (doc.exists && doc['profileImage'] != '') {
-        return  doc['profileImage'];
+        return doc['profileImage'];
       } else {
         return '';
       }
@@ -375,5 +367,151 @@ class Database_Service {
     }
   }
 
+  Future<bool> uploadDataInCartOnCloud(String productId, String vendorId,
+      String category, int selectedQuantity) async {
+    try {
+      // Reference to the user's cart collection
+      final CollectionReference cartCollection = accountsCollection.doc(userId)
+          .collection('Cart');
+
+      // Create a map containing the values
+      Map<String, dynamic> cartItem = {
+        'productId': productId,
+        'vendorId': vendorId,
+        'category': category,
+        'selectedQuantity': selectedQuantity,
+      };
+
+      // Add the map to the Firestore collection
+      await cartCollection.add(cartItem);
+
+      // Data uploaded successfully
+      return true;
+    } catch (error) {
+      // Error occurred while uploading data
+      print('Error uploading data to Firestore: $error');
+      return false;
+    }
+  }
+
+
+  Future<List<Map<String, dynamic>>> fetchCartDataFromCloud() async {
+    try {
+      // Reference to the user's cart collection
+      final CollectionReference cartCollection = accountsCollection.doc(userId)
+          .collection('Cart');
+
+      // Get all documents from the cart collection
+      QuerySnapshot querySnapshot = await cartCollection.get();
+
+      // Convert documents to a list of maps
+      List<Map<String, dynamic>> cartData = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>)
+          .toList();
+
+      return cartData;
+    } catch (error) {
+      // Error occurred while fetching data
+      print('Error fetching data from Firestore: $error');
+      return [];
+    }
+  }
+
+
+
+  Future<Map<int ,Map<String, dynamic>>> fetchAllProductDetailsOfCart() async {
+    try {
+      List<Map<String,
+          dynamic>> cartData = await fetchCartDataFromCloud();
+      Map<int, Map<String, dynamic>> cartProducts = {};
+
+      int index = 0;
+      for (var item in cartData) {
+        final String productId = item['productId'];
+        final String vendorId = item['vendorId'];
+        final String category = item['category'];
+        final int selectedQuantity = item['selectedQuantity'];
+
+        DocumentSnapshot productSnapshot = await FirebaseFirestore.instance
+            .collection('Store')
+            .doc(vendorId)
+            .collection(category)
+            .doc(productId)
+            .get();
+
+        if (productSnapshot.exists) {
+          Map<String, dynamic> productData = productSnapshot.data() as Map<
+              String,
+              dynamic>;
+
+          cartProducts[index] = {
+            'product-id': productId,
+            'vendor-id': vendorId,
+            'product-name': productData['product-name'],
+            'description': productData['description'],
+            'price': productData['price'],
+            'quantity': productData['quantity'],
+            'availability': productData['availability'],
+            'images': List<String>.from(productData['images']),
+            'selected-quantity': selectedQuantity,
+          };
+          index++;
+        }
+      }
+
+      return cartProducts;
+    } catch (error) {
+      print('Error fetching or processing cart data: $error');
+      return {}; // Returning an empty map as a default value
+    }
+  }
+
+
+
+  Future<Map<int ,Map<String, dynamic>>> updateProductDetailsOfCart() async {
+    try {
+      List<Map<String,
+          dynamic>> cartData = await fetchCartDataFromCloud();
+      Map<int, Map<String, dynamic>> cartProducts = {};
+
+      int index = 0;
+      for (var item in cartData) {
+        final String productId = item['productId'];
+        final String vendorId = item['vendorId'];
+        final String category = item['category'];
+        final int selectedQuantity = item['selectedQuantity'];
+
+        DocumentSnapshot productSnapshot = await FirebaseFirestore.instance
+            .collection('Store')
+            .doc(vendorId)
+            .collection(category)
+            .doc(productId)
+            .get();
+
+        if (productSnapshot.exists) {
+          Map<String, dynamic> productData = productSnapshot.data() as Map<
+              String,
+              dynamic>;
+
+          cartProducts[index] = {
+            'product-id': productId,
+            'vendor-id': vendorId,
+            'product-name': productData['product-name'],
+            'description': productData['description'],
+            'price': productData['price'],
+            'quantity': productData['quantity'],
+            'availability': productData['availability'],
+            'images': List<String>.from(productData['images']),
+            'selected-quantity': selectedQuantity,
+          };
+          index++;
+        }
+      }
+
+      return cartProducts;
+    } catch (error) {
+      print('Error fetching or processing cart data: $error');
+      return {}; // Returning an empty map as a default value
+    }
+  }
 
 }

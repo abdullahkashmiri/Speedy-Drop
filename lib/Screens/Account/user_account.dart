@@ -202,13 +202,13 @@ class _UserAccountState extends State<UserAccount> {
             itemBuilder: (BuildContext context) =>
             [
               PopupMenuItem(
-                value: 'buyer-mode',
+                value: 'return',
                 child: Row(
                   children: [
-                    Icon(Icons.switch_account,
+                    Icon(Icons.arrow_back_ios,
                       color: _orangeColor,),
                     const SizedBox(width: 10.0,),
-                    const Text('Buyer',
+                    const Text('Return',
                       style: TextStyle(
                           fontWeight: FontWeight.bold
                       ),
@@ -216,48 +216,11 @@ class _UserAccountState extends State<UserAccount> {
                   ],
                 ),
               ),
-              PopupMenuItem(
-                value: 'rider-mode',
-                child: Row(
-                  children: [
-                    Icon(Icons.motorcycle_sharp, color: _orangeColor,),
-                    const SizedBox(width: 10.0,),
-                    const Text(
-                        'Rider', style: TextStyle(fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                value: 'seller-mode',
-                child: Row(
-                  children: [
-                    Icon(Icons.store, color: _orangeColor,),
-                    const SizedBox(width: 10.0,),
-                    const Text('Seller',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ),
             ],
             onSelected: (String value) {
-              if (value == 'buyer-mode') {
-                dev.log('buyer-mode');
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) {
-                  return const HomeScreenBuyer();
-                }));
-              } else if (value == 'rider-mode') {
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) {
-                  return const HomeScreenRider();
-                }));
-                dev.log('rider-mode');
-              } else if (value == 'seller-mode') {
-                dev.log('seller mode');
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) {
-                  return const HomeScreenSeller(previousScreen: 'userAccount');
-                }));
+              if (value == 'return') {
+                dev.log('Return');
+                Navigator.pop(context);
               }
             },
 
