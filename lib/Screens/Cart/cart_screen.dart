@@ -19,15 +19,13 @@ import '../Home/homeBuyer.dart';
 
 // This is a StatefulWidget named CartScreen. A StatefulWidget is a widget that describes 
 // part of the user interface which can change over time or when some actions are taken.
-class CartScreen extends StatefulWidget {
-  // Map object that holds the cart products. The key is an integer and the value is another Map with String keys and dynamic values.
-  final Map<int, Map<String, dynamic>> cart_products;
-  // This is a String that holds the vendor id.
-  final String vendor_id;
+// Map object that holds the cart products. The key is an integer and the value is another Map with String keys and dynamic values.
 
+class CartScreen extends StatefulWidget {
+  final Map<int, Map<String, dynamic>> cart_products;
+  final String vendor_id;
   // This is the constructor for the CartScreen widget. It requires two parameters: cart_products and vendor_id.
-  // The 'required' keyword indicates that these parameters must be provided when creating a new instance of CartScreen.
-  const CartScreen({
+    const CartScreen({
     Key? key,
     required this.cart_products,
     required this.vendor_id,
