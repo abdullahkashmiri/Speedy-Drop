@@ -17,22 +17,16 @@ import 'package:permission_handler/permission_handler.dart';
 import '../Home/homeBuyer.dart';
 
 
-// This is a StatefulWidget named CartScreen. A StatefulWidget is a widget that describes 
-// part of the user interface which can change over time or when some actions are taken.
-// Map object that holds the cart products. The key is an integer and the value is another Map with String keys and dynamic values.
-
 class CartScreen extends StatefulWidget {
   final Map<int, Map<String, dynamic>> cart_products;
   final String vendor_id;
-  // This is the constructor for the CartScreen widget. It requires two parameters: cart_products and vendor_id.
-    const CartScreen({
+
+  const CartScreen({
     Key? key,
     required this.cart_products,
     required this.vendor_id,
   }) : super(key: key);
 
-  // This is the createState method. It's a part of the StatefulWidget lifecycle. 
-  // This method creates the mutable state for this widget at a given location in the tree.
   @override
   State<CartScreen> createState() => _CartScreenState();
 }
