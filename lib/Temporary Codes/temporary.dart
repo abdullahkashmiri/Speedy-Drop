@@ -190,17 +190,6 @@
 //             itemBuilder: (BuildContext context) =>
 //             [
 //
-//               PopupMenuItem(
-//                 value: 'buyer-mode',
-//                 child: Row(
-//                   children: [
-//                     Icon(Icons.switch_account, color: _orangeColor,),
-//                     const SizedBox(width: 10.0,),
-//                     const Text('Home',
-//                         style: TextStyle(fontWeight: FontWeight.bold)),
-//                   ],
-//                 ),
-//               ),
 //
 //               PopupMenuItem(
 //                 value: 'logout',
