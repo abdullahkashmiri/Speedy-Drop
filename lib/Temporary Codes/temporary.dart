@@ -25,6 +25,56 @@
 //   State<CartScreen> createState() => _CartScreenState();
 // }
 //
+// class _CartScreenState extends State<CartScreen> {
+//
+//   //Variables
+//   Color _orangeColor = Colors.orange.shade800;
+//   final Auth_Service _auth_service = Auth_Service();
+//   String _currentAddress = '';
+//   String _profileImage = 'assets/images/speedyLogov1.png';
+//   String profilePhoto = '';
+//   String userId = '';
+//   double latitude = 0.0;
+//   double longitude = 0.0;
+//   int popularStoreMinSales = 35;
+//   late Map<int, Map<String, dynamic>> cartProducts;
+//   late Map<int, Map<String, dynamic>> cartProductsSorted = {};
+//   bool isLoading = true;
+//   late List<bool> isChecked;
+//   late List<bool> isDeleteButtonRed;
+//
+//   //Functions
+//   @override
+//   void initState() {
+//     super.initState();
+//     initializeData();
+//   }
+//
+//   Future<void> _getCurrentLocation() async {
+//     var permissionStatus = await Permission.location.status;
+//     if (permissionStatus.isGranted) {
+//       try {
+//         Position position = await Geolocator.getCurrentPosition(
+//             desiredAccuracy: LocationAccuracy.high);
+//         latitude = position.latitude;
+//         longitude = position.longitude;
+//         List<Placemark> placemarks =
+//         await placemarkFromCoordinates(position.latitude, position.longitude);
+//         String address = placemarks.first.name ?? '';
+//         setState(() {
+//           _currentAddress = address;
+//         });
+//       } catch (e) {
+//         print("Error: $e");
+//       }
+//     } else {
+//       // If permission is not granted, request it
+//       if (permissionStatus.isDenied || permissionStatus.isRestricted) {
+//         await Permission.location.request();
+//       }
+//     }
+//   }
+//
 //   Future<void> initializeData() async {
 //     // Fetch cart products
 //     cartProducts = await Database_Service(userId: _auth_service.getUserId())
