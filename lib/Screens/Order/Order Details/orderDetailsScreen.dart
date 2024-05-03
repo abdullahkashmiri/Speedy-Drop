@@ -65,22 +65,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     storeName = currentOrderData['storeName'];
     storeImageLink = currentOrderData['storeImageLink'];
     orderCreationTime = currentOrderData['orderCreationTime'];
-
-    // fetching in a loop all order products
-    // Map<String, dynamic>? product = orderProducts[index];
-    // String productId = product?['product-id'];
-    // String vendorId = product?['vendor-id'];
-    // String productName = product?['product-name'];
-    // String productDescription = product?['description'];
-    // double price = product?['price'];
-    // int productQuantity = product?['quantity'];
-    // bool availability = product?['availability'];
-    // List<String> productImages = List<
-    //     String>.from(product?['images']);
-    // int selectedQuantity = product?['selected-quantity'];
-    // double val = selectedQuantity * price;
-    // int calculatedPrice = val.toInt();
-
     setState(() {
       isLoading = false;
     });
@@ -292,6 +276,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                       text: '$deliveryTime',
                                       style: TextStyle(color: _orangeColor, fontWeight: FontWeight.bold), // Use orange color for the value
                                     ),
+                                    const TextSpan(text: ' mins'),
                                   ],
                                 ),
                               ),

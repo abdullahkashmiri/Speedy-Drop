@@ -45,17 +45,41 @@ class _OrdersScreenState extends State<OrdersScreen> {
   }
 
 
+  Future<void> _getCurrentLocation() async {
+    var permissionStatus = await Permission.location.status;
+    if (permissionStatus.isGranted) {
+      try {
+        Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
+        latitude = position.latitude;
+        longitude = position.longitude;
+        List<Placemark> placemarks =
+        await placemarkFromCoordinates(position.latitude, position.longitude);
+        String address = placemarks.first.name ?? '';
+        setState(() {
+          _currentAddress = address;
+        });
+      } catch (e) {
+        print("Error: $e");
+      }
+    } else {
+      // If permission is not granted, request it
+      if (permissionStatus.isDenied || permissionStatus.isRestricted) {
+        await Permission.location.request();
+      }
+    }
+  }
+
+
   Future<void> initializeData() async {
     // Fetch
+    _getCurrentLocation();
     orders = await Database_Service(userId: _auth_service.getUserId()).fetchOrdersFromCloud();
-    print("Orders");
-    print(orders.length);
+
     setState(() {
       isLoading = false;
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {

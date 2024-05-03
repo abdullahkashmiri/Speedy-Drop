@@ -719,7 +719,7 @@ class _CartScreenState extends State<CartScreen> {
                           setState(() {
                             isLoading = true;
                           });
-                          bool isUpdated = await Database_Service(userId: _auth_service.getUserId()).updateProductDetailsOfCart(cartProducts, orderProducts, deliveryCharges, totalCharges, estimatedDelivery, storeName!, storeImageLink!);
+                          bool isUpdated = await Database_Service(userId: _auth_service.getUserId()).updateProductDetailsOfCart(cartProducts, orderProducts, deliveryCharges, totalCharges, estimatedDelivery, storeName!, storeImageLink!, vendorId);
                           print("is updated : $isUpdated");
                           if(isUpdated) {
                             Navigator.pop(context);

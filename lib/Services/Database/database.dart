@@ -79,7 +79,8 @@ class Database_Service {
     }
   }
 
-  Future<bool> createSellerMode(String storeName, String storeDescription, List<String> selectedDays, String openingHours, String closingHours, LatLng storeLocation, String contactNumber, File storeImage) async {
+  Future<bool> createSellerMode(String storeName, String storeDescription, List<String> selectedDays, String openingHours,
+      String closingHours, LatLng storeLocation, String contactNumber, File storeImage) async {
     try {
       String ownerId = userId;
       int sales = 0;
@@ -453,7 +454,7 @@ class Database_Service {
   }
 
   Future<bool> updateProductDetailsOfCart(Map<int, Map<String, dynamic>> cartProducts, Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges,
-      int totalCharges, int deliveryTime, String storeName, String storeImageLink) async {
+      int totalCharges, int deliveryTime, String storeName, String storeImageLink, String vendorId) async {
     try {
       final CollectionReference cartCollection = accountsCollection
           .doc(userId)
@@ -476,7 +477,7 @@ class Database_Service {
           }
         }
       }
-      bool isOrderCreated = await uploadDataInOrderOnCloud(orderProducts, deliveryCharges, totalCharges, deliveryTime, storeName, storeImageLink);
+      bool isOrderCreated = await uploadDataInOrderOnCloud(orderProducts, deliveryCharges, totalCharges, deliveryTime, storeName, storeImageLink, vendorId);
       if(isOrderCreated) {
         return true;
       } else {
@@ -488,14 +489,8 @@ class Database_Service {
     }
   }
 
-
-  Future<bool> uploadDataInOrderOnCloud(
-      Map<int, Map<String, dynamic>> orderProducts,
-      int deliveryCharges,
-      int totalCharges,
-      int deliveryTime,
-      String storeName,
-      String storeImageLink) async {
+  Future<bool> uploadDataInOrderOnCloud(Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges,
+      int totalCharges, int deliveryTime, String storeName, String storeImageLink, String vendorId) async {
     try {
       // Reference to the user's cart collection
       final CollectionReference orderCollection = accountsCollection
@@ -527,7 +522,7 @@ class Database_Service {
 
       // Add the map to the Firestore collection
       await orderCollection.add(orderData);
-
+      await incrementStoreSales(vendorId);
       // Data uploaded successfully
       return true;
     } catch (error) {
@@ -576,4 +571,34 @@ class Database_Service {
       print("Error deleting product: $error");
     }
   }
+
+  Future<void> incrementStoreSales(String vendorUserId) async {
+    try {
+      // Fetch the document snapshot
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await storeCollection.doc(vendorUserId).get() as DocumentSnapshot<Map<String, dynamic>>;
+
+      if (snapshot.exists) {
+        // Access the data from the snapshot
+        Map<String, dynamic> storeData = snapshot.data()!;
+
+        // Get the current sales value
+        int currentSales = storeData['store-details']['sales'] ?? 0;
+
+        // Increment sales by 1
+        int updatedSales = currentSales + 1;
+
+        // Update the sales value in Firestore
+        await storeCollection.doc(vendorUserId).update({
+          'store-details.sales': updatedSales,
+        });
+      } else {
+        print('Document does not exist.');
+      }
+    } catch (e) {
+      print('Error incrementing store sales: $e');
+    }
+  }
+
+
+
 }

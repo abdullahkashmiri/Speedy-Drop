@@ -84,7 +84,6 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
   Future<void> initializedData() async {
     Map<String, dynamic>? userData = await Database_Service(
         userId: _auth_service.getUserId()).fetchUserDataFromCloud();
-
     userId = userData?['user-id'] ?? '';
     _userName = userData?['user-name'] ?? '';
     profilePhoto = userData?['profileImage'] ?? '';
