@@ -8,8 +8,8 @@ import '../../../Constants/constants.dart';
 import '../../../Services/Auth/auth.dart';
 import '../../Account/user_account.dart';
 import '../../Authentication/Sign In/signin.dart';
-import '../../Home/homeBuyer.dart';
-import '../../Home/homeRider.dart';
+import '../../Home/Buyer/homeBuyer.dart';
+import '../../Home/Rider/homeRider.dart';
 
 class NewProductScreen extends StatefulWidget {
   const NewProductScreen({super.key});

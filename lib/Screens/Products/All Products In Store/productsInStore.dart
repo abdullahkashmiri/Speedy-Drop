@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:speedydrop/Screens/Home/homeBuyer.dart';
+import 'package:speedydrop/Screens/Home/Buyer/homeBuyer.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Screens/Products/Product%20Screen/singleProduct.dart';
 import 'package:speedydrop/Services/Database/database.dart';
@@ -90,13 +90,15 @@ class _ProductsInStoreState extends State<ProductsInStore> {
   Future<void> storeDataInitialized() async {
     try {
       // Fetch store data
-      Map<String, dynamic>? storeData = await Database_Service(userId: ownerId).fetchStoreData();
+      Map<String, dynamic>? storeData = await Database_Service(userId: ownerId)
+          .fetchStoreData();
 
       if (storeData != null) {
         // Extract data into variables
         storeName = storeData['store-details']['store-name'];
         storeDescription = storeData['store-details']['store-description'];
-        selectedDays = List<String>.from(storeData['store-details']['selectedDays']);
+        selectedDays =
+        List<String>.from(storeData['store-details']['selectedDays']);
         openingHours = storeData['store-details']['openingHours'];
         closingHours = storeData['store-details']['closingHours'];
         latitude = storeData['store-details']['address']['latitude'];
@@ -109,7 +111,8 @@ class _ProductsInStoreState extends State<ProductsInStore> {
           longitude!,
         );
         locationName = placemarks[0].name ?? '';
-        profilePhoto = await Database_Service(userId: _auth_service.getUserId()).fetchUserProfilePhoto();
+        profilePhoto = await Database_Service(userId: _auth_service.getUserId())
+            .fetchUserProfilePhoto();
         setState(() {
           isLoading = false;
         });
@@ -154,12 +157,16 @@ class _ProductsInStoreState extends State<ProductsInStore> {
               ),
 
               ClipRRect(
-                borderRadius: BorderRadius.circular(10), // Adjust the border radius as needed
+                borderRadius: BorderRadius.circular(10),
+                // Adjust the border radius as needed
                 child: storeImageLink == ''
                     ? Container( // Placeholder container if storeImageLink is empty
-                  width: 40, // Adjust the width as needed
-                  height: 40, // Adjust the height as needed
-                  color: Colors.blue, // Set background color if storeImageLink is empty
+                  width: 40,
+                  // Adjust the width as needed
+                  height: 40,
+                  // Adjust the height as needed
+                  color: Colors.blue,
+                  // Set background color if storeImageLink is empty
                   child: Center(
                     child: Image.asset(_profileImage), // Use default image
                   ),
@@ -206,17 +213,30 @@ class _ProductsInStoreState extends State<ProductsInStore> {
             onSelected: (String value) {
               if (value == 'buyer-mode') {
                 dev.log('buyer-mode');
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) {
-                  return const HomeScreenBuyer();
-                }));
-              }  else if (value == 'logout') {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomeScreenBuyer()),
+                      (route) => false, // This condition removes all routes from the stack
+                );
+
+                // Navigator.pushReplacement(
+                //     context, MaterialPageRoute(builder: (context) {
+                //   return const HomeScreenBuyer();
+                // }));
+              } else if (value == 'logout') {
                 dev.log('logout');
                 _auth_service.signOut();
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) {
-                  return const SignIn();
-                }));
+                // Navigator.pushReplacement(
+                //     context, MaterialPageRoute(builder: (context) {
+                //   return const SignIn();
+                // }));
+
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => SignIn()),
+                      (route) => false, // This condition removes all routes from the stack
+                );
+
               }
               setState(() {
                 _orangeColor = Colors.orange.shade800;
@@ -248,10 +268,12 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                     children: [
                       storeName != null ?
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 10.0),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 50.0, vertical: 10.0),
                         decoration: BoxDecoration(
                           color: _orangeColor,
-                          borderRadius: BorderRadius.circular(20.0), // Adjust the radius for smoother edges
+                          borderRadius: BorderRadius.circular(
+                              20.0), // Adjust the radius for smoother edges
                         ),
                         child: Column(
                           children: [
@@ -266,9 +288,11 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                               ),
                             ),
                             const SizedBox(height: 2.0,),
-                            Text('Contact Us : $contactNumber',style: const TextStyle(color: Colors.white),),
+                            Text('Contact Us : $contactNumber',
+                              style: const TextStyle(color: Colors.white),),
                             const SizedBox(height: 2.0,),
-                            Text('Estimated Delivery : $deliveryTime mins',style: const TextStyle(color: Colors.white),)
+                            Text('Estimated Delivery : $deliveryTime mins',
+                              style: const TextStyle(color: Colors.white),)
                           ],
                         ),
                       ) : Container(),
@@ -281,22 +305,19 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                           ),),
                       ),
                       Expanded(
-                        child: GridView.builder(
+                        child: ListView.builder(
                           itemCount: products.length,
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3, // Two products per row
-                            mainAxisSpacing: 5.0,
-                            crossAxisSpacing: 5.0,
-                            childAspectRatio: 0.7,
-                          ),
                           itemBuilder: (context, index) {
-                            Map<String,
-                                dynamic> product = products[index];
+                            Map<String, dynamic> product = products[index];
                             return GestureDetector(
                               onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                  return ProductScreen(locationName: locationName, product:  product, storeImage: storeImageLink);
-                                }));
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                      return ProductScreen(
+                                          locationName: locationName,
+                                          product: product,
+                                          storeImage: storeImageLink);
+                                    }));
                               },
                               child: Card(
                                 elevation: 4,
@@ -306,67 +327,162 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                                       10.0), // Rounded corners
                                 ),
                                 color: Colors.white,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment
-                                      .start,
-                                  children: [
-                                    // Display product image (assuming 'images' is a list of image URLs)
-                                    ClipRRect(
-                                      borderRadius: const BorderRadius
-                                          .vertical(
-                                          top: Radius.circular(10.0)),
-                                      child: Image.network(
-                                        product['images'][0],
-                                        // Assuming the first image URL is used
-                                        width: double.infinity,
-                                        height: 90.0,
-                                        fit: BoxFit.cover,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start,
+                                    children: [
+                                      // Display product image (assuming 'images' is a list of image URLs)
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(
+                                            8.0),
+                                        child: Image.network(
+                                          product['images'][0],
+                                          // Assuming the first image URL is used
+                                          width: 90.0,
+                                          height: 90.0,
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.all(3.0),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment
-                                            .start,
-                                        children: [
-                                          Text(
-                                            product['product-name'],
-                                            style: const TextStyle(
-                                              fontSize: 12.0,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                            maxLines: 1, // Display only one line
-                                            overflow: TextOverflow.ellipsis, // Truncate text with ellipsis if it exceeds one line
-                                          ),
-                                          Text(
-                                            '${product['category']}',
-                                            style: TextStyle(
-                                                fontSize: 10.0,
-                                                color: _orangeColor,
-                                              fontWeight: FontWeight.bold
-                                            ),
-                                            maxLines: 1, // Display only one line
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-
-                                          Text(
-                                            'Price: ${product['price']}',
-                                            style: const TextStyle(
-                                              fontSize: 10.0,
-                                            ),
-                                              maxLines: 1, // Display only one line
+                                      SizedBox(width: 8.0),
+                                      // Add some space between image and text
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment
+                                              .start,
+                                          children: [
+                                            Text(
+                                              product['product-name'],
+                                              style: TextStyle(
+                                                fontSize: 14.0,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
-                                          ),
-
-                                        ],
+                                            ),
+                                            Text(
+                                              product['description'],
+                                              style: TextStyle(
+                                                fontSize: 12.0,
+                                              ),
+                                              maxLines: 2,
+                                              // Display only two lines for description
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            Text(
+                                              'Category: ${product['category']}',
+                                              style: TextStyle(
+                                                fontSize: 14.0,
+                                                color: _orangeColor,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            Text(
+                                              'Price: ${product['price']}',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14.0,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ), // Set the background color of the card
+                                    ],
+                                  ),
+                                ),
                               ),
                             );
                           },
                         ),
+                        // child: GridView.builder(
+                        //   itemCount: products.length,
+                        //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        //     crossAxisCount: 3, // Two products per row
+                        //     mainAxisSpacing: 5.0,
+                        //     crossAxisSpacing: 5.0,
+                        //     childAspectRatio: 0.7,
+                        //   ),
+                        //   itemBuilder: (context, index) {
+                        //     Map<String,
+                        //         dynamic> product = products[index];
+                        //     return GestureDetector(
+                        //       onTap: () {
+                        //         Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        //           return ProductScreen(locationName: locationName, product:  product, storeImage: storeImageLink);
+                        //         }));
+                        //       },
+                        //       child: Card(
+                        //         elevation: 4,
+                        //         // Add elevation for a shadow effect
+                        //         shape: RoundedRectangleBorder(
+                        //           borderRadius: BorderRadius.circular(
+                        //               10.0), // Rounded corners
+                        //         ),
+                        //         color: Colors.white,
+                        //         child: Column(
+                        //           crossAxisAlignment: CrossAxisAlignment
+                        //               .start,
+                        //           children: [
+                        //             // Display product image (assuming 'images' is a list of image URLs)
+                        //             ClipRRect(
+                        //               borderRadius: const BorderRadius
+                        //                   .vertical(
+                        //                   top: Radius.circular(10.0)),
+                        //               child: Image.network(
+                        //                 product['images'][0],
+                        //                 // Assuming the first image URL is used
+                        //                 width: double.infinity,
+                        //                 height: 90.0,
+                        //                 fit: BoxFit.cover,
+                        //               ),
+                        //             ),
+                        //             Padding(
+                        //               padding: const EdgeInsets.all(3.0),
+                        //               child: Column(
+                        //                 crossAxisAlignment: CrossAxisAlignment
+                        //                     .start,
+                        //                 children: [
+                        //                   Text(
+                        //                     product['product-name'],
+                        //                     style: const TextStyle(
+                        //                       fontSize: 12.0,
+                        //                       fontWeight: FontWeight.bold,
+                        //                     ),
+                        //                     maxLines: 1, // Display only one line
+                        //                     overflow: TextOverflow.ellipsis, // Truncate text with ellipsis if it exceeds one line
+                        //                   ),
+                        //                   Text(
+                        //                     '${product['category']}',
+                        //                     style: TextStyle(
+                        //                         fontSize: 10.0,
+                        //                         color: _orangeColor,
+                        //                       fontWeight: FontWeight.bold
+                        //                     ),
+                        //                     maxLines: 1, // Display only one line
+                        //                     overflow: TextOverflow.ellipsis,
+                        //                   ),
+                        //
+                        //                   Text(
+                        //                     'Price: ${product['price']}',
+                        //                     style: const TextStyle(
+                        //                       fontSize: 10.0,
+                        //                     ),
+                        //                       maxLines: 1, // Display only one line
+                        //                       overflow: TextOverflow.ellipsis,
+                        //                   ),
+                        //
+                        //                 ],
+                        //               ),
+                        //             ),
+                        //           ],
+                        //         ), // Set the background color of the card
+                        //       ),
+                        //     );
+                        //   },
+                        // ),
                       ),
                     ],
                   ),
@@ -374,7 +490,7 @@ class _ProductsInStoreState extends State<ProductsInStore> {
               }
             }
           },
-        ) ,
+        ),
 
       );
     } else {

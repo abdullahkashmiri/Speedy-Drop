@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:speedydrop/Constants/constants.dart';
 import 'package:speedydrop/Screens/Authentication/Sign%20Up/signup.dart';
-import 'package:speedydrop/Screens/Home/homeBuyer.dart';
+import 'package:speedydrop/Screens/Home/Buyer/homeBuyer.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Services/Auth/auth.dart';
 

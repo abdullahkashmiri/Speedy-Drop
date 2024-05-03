@@ -5,21 +5,18 @@ import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:speedydrop/Screens/Account/user_account.dart';
 import 'package:speedydrop/Screens/Authentication/Sign%20In/signin.dart';
-import 'package:speedydrop/Screens/Cart/cart_screen.dart';
-import 'package:speedydrop/Screens/Home/homeSeller.dart';
+import 'package:speedydrop/Screens/Home/Seller/homeSeller.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
-import 'package:speedydrop/Screens/Manage%20Store/All%20Stores/all_stores.dart';
+import 'package:speedydrop/Screens/Order/Orders%20Screen/ordersScreen.dart';
 import 'package:speedydrop/Services/Auth/auth.dart';
 import 'package:speedydrop/Services/Database/database.dart';
-import '../Cart/display_cart_screen.dart';
-import '../Products/All Products In Store/productsInStore.dart';
-import 'homeRider.dart';
+import '../../Cart/display_cart_screen.dart';
+import '../../Products/All Products In Store/productsInStore.dart';
+import '../../Store/All Stores/all_stores.dart';
+import '../Rider/homeRider.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-
-
 
 
 class HomeScreenBuyer extends StatefulWidget {
@@ -236,7 +233,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
               } else if (value == 'logout') {
                 dev.log('logout');
                 _auth_service.signOut();
-                Navigator.pushReplacement(
+                Navigator.push(
                     context, MaterialPageRoute(builder: (context) {
                   return const SignIn();
                 }));
@@ -310,10 +307,17 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                     Icons.messenger,
                     color: Colors.white,
                   ),
-                ) : const Icon(
-                  Icons.messenger,
-                  color: Colors.grey,
-                  size: 30.0,
+                ) : GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return const OrdersScreen();
+                    }));
+                  },
+                  child: const Icon(
+                    Icons.messenger,
+                    color: Colors.grey,
+                    size: 30.0,
+                  ),
                 ),
                 label: '',
               ),
@@ -422,7 +426,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                               onPressed: () {
                                 // Add functionality for More button here
                                 print('More button pressed');
-                                Navigator.pushReplacement(context,
+                                Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
                                       return AllStoreScreen();
                                     }));
@@ -556,8 +560,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
 
                                 return GestureDetector(
                                   onTap: () {
-                                    print('User Id: $ownerId');
-                                    Navigator.pushReplacement(context,
+                                    Navigator.push(context,
                                         MaterialPageRoute(builder: (context) {
                                           return ProductsInStore(
                                             owner_id: ownerId,
@@ -632,7 +635,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                               onPressed: () {
                                 // Add functionality for More button here
                                 print('More button pressed');
-                                Navigator.pushReplacement(context,
+                                Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
                                       return AllStoreScreen();
                                     }));
@@ -713,8 +716,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
 
                                 return GestureDetector(
                                   onTap: () {
-                                    print('User Id: $ownerId');
-                                    Navigator.pushReplacement(context,
+                                    Navigator.push(context,
                                         MaterialPageRoute(builder: (context) {
                                           return ProductsInStore(
                                             owner_id: ownerId,

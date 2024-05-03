@@ -1,9 +1,9 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:speedydrop/Screens/Home/homeSeller.dart';
-import '../../Services/Auth/auth.dart';
-import '../Authentication/Sign In/signin.dart';
-import 'homeBuyer.dart';
+import 'package:speedydrop/Screens/Home/Seller/homeSeller.dart';
+import '../../../Services/Auth/auth.dart';
+import '../../Authentication/Sign In/signin.dart';
+import '../Buyer/homeBuyer.dart';
 
 class HomeScreenRider extends StatefulWidget {
   const HomeScreenRider({super.key});

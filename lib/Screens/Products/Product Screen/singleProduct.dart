@@ -1,6 +1,6 @@
 import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
-import 'package:speedydrop/Screens/Home/homeBuyer.dart';
+import 'package:speedydrop/Screens/Home/Buyer/homeBuyer.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Services/Database/database.dart';
 import '../../../Services/Auth/auth.dart';
@@ -327,7 +327,7 @@ class _ProductScreenState extends State<ProductScreen> {
                     style: TextStyle(
                       color: Colors.grey.shade700
                     ),
-                    maxLines: 7,
+                    maxLines: 4,
                     overflow: TextOverflow.ellipsis,
                   ),
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer' as dev;
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -5,8 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:speedydrop/Screens/Account/user_account.dart';
 import 'package:speedydrop/Screens/Authentication/Sign%20In/signin.dart';
-import 'package:speedydrop/Screens/Home/homeSeller.dart';
+import 'package:speedydrop/Screens/Home/Seller/homeSeller.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
+import 'package:speedydrop/Screens/Order/Orders%20Screen/ordersScreen.dart';
 import 'package:speedydrop/Screens/Products/All%20Products%20In%20Store/productsInStore.dart';
 import 'package:speedydrop/Services/Auth/auth.dart';
 import 'package:speedydrop/Services/Database/database.dart';
@@ -14,7 +16,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../Home/homeBuyer.dart';
+import '../Home/Buyer/homeBuyer.dart';
 
 
 class CartScreen extends StatefulWidget {
@@ -572,10 +574,12 @@ class _CartScreenState extends State<CartScreen> {
                                                       isChecked[index] = true;
                                                       double v =  price * selectedQuantity;
                                                       subTotal += v.toInt();
+                                                      totalCharges = subTotal + deliveryCharges;
                                                     } else {
                                                       isChecked[index] = false;
                                                       double v =  price * selectedQuantity;
                                                       subTotal -= v.toInt();
+                                                      totalCharges = subTotal + deliveryCharges;
                                                     }
                                                   });
                                                 },
@@ -596,10 +600,13 @@ class _CartScreenState extends State<CartScreen> {
                                                       double v =  price * selectedQuantity;
                                                       subTotal -= v.toInt();
                                                       isChecked[index] = false;
+                                                      totalCharges = subTotal + deliveryCharges;
                                                     } else {
                                                       double v =  price * selectedQuantity;
                                                       subTotal += v.toInt();
                                                       isChecked[index] = true;
+                                                      totalCharges = subTotal + deliveryCharges;
+
                                                     }
                                                   });
                                                 },
@@ -697,7 +704,7 @@ class _CartScreenState extends State<CartScreen> {
                     ),
                     const SizedBox(height: 5.0,),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
 
                         late Map<int, Map<String, dynamic>> orderProducts = {};
                         int k = 0;
@@ -708,10 +715,30 @@ class _CartScreenState extends State<CartScreen> {
                           }
                         }
                         if(orderProducts.isNotEmpty) {
+                          // products to order
                           setState(() {
-                            _error = '';
+                            isLoading = true;
                           });
+                          bool isUpdated = await Database_Service(userId: _auth_service.getUserId()).updateProductDetailsOfCart(cartProducts, orderProducts, deliveryCharges, totalCharges, estimatedDelivery, storeName!, storeImageLink!);
+                          print("is updated : $isUpdated");
+                          if(isUpdated) {
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                              return const OrdersScreen();
+                            }));
+                            isLoading = false;
+                            setState(() {
+                              _error = '';
+                            });
+                          } else {
+                            isLoading = false;
+                            setState(() {
+                              _error = 'Unable to Place an Order!';
+                            });
+                          }
                         } else if(emptyCart){
+                          // delete products
                             Navigator.pop(context);
                         } else {
                           emptyCart = true;

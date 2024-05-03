@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../Services/Auth/auth.dart';
-import '../Account/user_account.dart';
-import '../Authentication/Sign In/signin.dart';
-import '../Home/homeBuyer.dart';
-import '../Home/homeRider.dart';
-import '../Products/New Product/new_product.dart';
+import '../../../Services/Auth/auth.dart';
+import '../../Account/user_account.dart';
+import '../../Authentication/Sign In/signin.dart';
+import '../../Home/Buyer/homeBuyer.dart';
+import '../../Home/Rider/homeRider.dart';
+import '../../Products/New Product/new_product.dart';
 import 'dart:developer' as dev;
 
 

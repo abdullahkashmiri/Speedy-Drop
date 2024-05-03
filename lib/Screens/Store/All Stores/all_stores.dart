@@ -13,7 +13,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../Home/homeBuyer.dart';
+import '../../Home/Buyer/homeBuyer.dart';
 
 
 class AllStoreScreen extends StatefulWidget {
@@ -186,17 +186,24 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
           onSelected: (String value) {
             if (value == 'buyer-mode') {
               dev.log('buyer-mode');
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) {
-                return const HomeScreenBuyer();
-              }));
+              Navigator.pop(context);
+              // Navigator.pushReplacement(
+              //     context, MaterialPageRoute(builder: (context) {
+              //   return const HomeScreenBuyer();
+              // }));
             }  else if (value == 'logout') {
               dev.log('logout');
               _auth_service.signOut();
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) {
-                return const SignIn();
-              }));
+              // Navigator.pushReplacement(
+              //     context, MaterialPageRoute(builder: (context) {
+              //   return const SignIn();
+              // }));
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => SignIn()),
+                    (route) => false, // This condition removes all routes from the stack
+              );
+
             }
             setState(() {
               _orangeColor = Colors.orange.shade800;
@@ -321,8 +328,7 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
                                       ),
                                       child: ListTile(
                                         onTap: () {
-                                          print('User Id: $ownerId');
-                                         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                                         Navigator.push(context, MaterialPageRoute(builder: (context) {
                                            return ProductsInStore(owner_id: ownerId,delivery_time: deliveryTime,);
                                          }));
                                         },

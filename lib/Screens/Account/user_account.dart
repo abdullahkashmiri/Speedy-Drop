@@ -6,12 +6,12 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:speedydrop/Screens/Home/homeSeller.dart';
+import 'package:speedydrop/Screens/Home/Seller/homeSeller.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Services/Database/database.dart';
 import '../../../Services/Auth/auth.dart';
-import '../Home/homeBuyer.dart';
-import '../Home/homeRider.dart';
+import '../Home/Buyer/homeBuyer.dart';
+import '../Home/Rider/homeRider.dart';
 import 'dart:developer' as dev;
 
 
