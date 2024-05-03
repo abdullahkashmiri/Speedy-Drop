@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer' as dev;
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:speedydrop/Screens/Account/user_account.dart';
 import 'package:speedydrop/Screens/Authentication/Sign%20In/signin.dart';
@@ -64,6 +65,8 @@ class _CartScreenState extends State<CartScreen> {
   int totalCharges = 0;
   String _error = '';
   bool emptyCart = false;
+  bool isStoreOpen = false;
+
 
 
   //Functions
@@ -99,6 +102,38 @@ class _CartScreenState extends State<CartScreen> {
   }
 
 
+  Future<bool> isStoreOpenForPlacingOrder(String openHours, String closeHours) async {
+    // Get the current date and time
+    DateTime now = DateTime.now();
+    String dayAbbreviation = DateFormat.E().format(
+        now); // "E" gives the abbreviated day name
+    String formattedDay = dayAbbreviation.substring(
+        0, 3); // Take the first three characters
+    bool? isDaySelected = selectedDays?.contains(
+        formattedDay);
+    String formattedTime = DateFormat('h:mm a')
+        .format(now);
+    DateTime openTime = DateFormat('h:mm a').parse(
+        openHours);
+    DateTime closeTime = DateFormat('h:mm a').parse(
+        closeHours);
+    DateTime parsedTime = DateFormat('h:mm a').parse(
+        formattedTime);
+    bool isOpen = ((parsedTime.isAfter(openTime) &&
+        parsedTime.isBefore(closeTime)) ||
+        (parsedTime.isAtSameMomentAs(openTime) ||
+            parsedTime.isAtSameMomentAs(closeTime)));
+    bool isOpenTimeMidnight = openTime.hour == 0 &&
+        openTime.minute == 0 && openTime.second == 0;
+    bool isCloseTimeMidnight = closeTime.hour == 0 &&
+        closeTime.minute == 0 &&
+        closeTime.second == 0;
+    if (isOpenTimeMidnight && isCloseTimeMidnight && isDaySelected!) {
+      isOpen = true;
+    }
+    return isOpen;
+  }
+
   Future<void> storeDataInitialized() async {
     try {
       // Fetch store data
@@ -119,6 +154,19 @@ class _CartScreenState extends State<CartScreen> {
         contactNumber = storeData['store-details']['contact-number'];
         storeImageLink = storeData['store-details']['store-image'];
 
+        isStoreOpen = await isStoreOpenForPlacingOrder(openingHours!, closingHours!);
+
+        print("--------------------------------------------------");
+        print("open :  $isStoreOpen");
+        if (!isStoreOpen) {
+          List<String> selectedDays = List<String>.from(storeData['store-details']['selectedDays']);
+          String daysString = selectedDays.join(', '); // Join days with commas
+
+          _error = "Sorry, Store is Closed Now! Place your Order On $daysString, Between $openingHours to $closingHours";
+        } else {
+          _error = '';
+        }
+
         List<Placemark> placemarks = await placemarkFromCoordinates(
           latitude,
           longitude,
@@ -126,6 +174,8 @@ class _CartScreenState extends State<CartScreen> {
         locationName = placemarks[0].name ?? '';
         profilePhoto = await Database_Service(userId: _auth_service.getUserId())
             .fetchUserProfilePhoto();
+
+
         setState(() {
 
         });
@@ -380,9 +430,12 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                     ),
                     const SizedBox(height: 2.0,),
-                    Center(
-                      child: Text(_error, style: const TextStyle(
-                          color: Colors.red, fontWeight: FontWeight.bold),),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Center(
+                        child: Text(_error, style: const TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold),),
+                      ),
                     ),
                     const SizedBox(height: 2.0,),
 
@@ -664,50 +717,63 @@ class _CartScreenState extends State<CartScreen> {
                     const SizedBox(height: 5.0,),
                     ElevatedButton(
                       onPressed: () async {
-
-                        late Map<int, Map<String, dynamic>> orderProducts = {};
-                        int k = 0;
-                        for(int i = 0; i < isChecked.length; i++) {
-                          if(isChecked[i] == true) {
-                            orderProducts[k] = cartProducts[i]!;
-                            k++;
+                        if(isStoreOpen) {
+                          late Map<int, Map<String, dynamic>> orderProducts = {
+                          };
+                          int k = 0;
+                          for (int i = 0; i < isChecked.length; i++) {
+                            if (isChecked[i] == true) {
+                              orderProducts[k] = cartProducts[i]!;
+                              k++;
+                            }
                           }
-                        }
-                        if(orderProducts.isNotEmpty) {
-                          // products to order
-                          setState(() {
-                            isLoading = true;
-                          });
-                          bool isUpdated = await Database_Service(userId: _auth_service.getUserId()).updateProductDetailsOfCart(cartProducts, orderProducts, deliveryCharges, totalCharges, estimatedDelivery, storeName!, storeImageLink!, vendorId);
-                          print("is updated : $isUpdated");
-                          if(isUpdated) {
-                            Navigator.pop(context);
-                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-                              return const OrdersScreen();
-                            }));
-                            isLoading = false;
+                          if (orderProducts.isNotEmpty) {
+                            // products to order
                             setState(() {
-                              _error = '';
+                              isLoading = true;
                             });
+                            bool isUpdated = await Database_Service(
+                                userId: _auth_service.getUserId())
+                                .updateProductDetailsOfCart(
+                                cartProducts,
+                                orderProducts,
+                                deliveryCharges,
+                                totalCharges,
+                                estimatedDelivery,
+                                storeName!,
+                                storeImageLink!,
+                                vendorId);
+                            print("is updated : $isUpdated");
+                            if (isUpdated) {
+                              Navigator.pop(context);
+                              Navigator.pushReplacement(
+                                  context, MaterialPageRoute(
+                                  builder: (context) {
+                                    return const OrdersScreen();
+                                  }));
+                              isLoading = false;
+                              setState(() {
+                                _error = '';
+                              });
+                            } else {
+                              isLoading = false;
+                              setState(() {
+                                _error = 'Unable to Place an Order!';
+                              });
+                            }
+                          } else if (emptyCart) {
+                            // delete products
+                            Navigator.pop(context);
                           } else {
-                            isLoading = false;
+                            emptyCart = true;
                             setState(() {
-                              _error = 'Unable to Place an Order!';
+                              _error = 'Do you want to Empty Cart!';
                             });
                           }
-                        } else if(emptyCart){
-                          // delete products
-                            Navigator.pop(context);
-                        } else {
-                          emptyCart = true;
-                          setState(() {
-                            _error = 'Do you want to Empty Cart!';
-                          });
                         }
-
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _orangeColor,
+                        backgroundColor: isStoreOpen ? _orangeColor : Colors.grey,
                       ),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,

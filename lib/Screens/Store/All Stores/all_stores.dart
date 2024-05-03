@@ -134,6 +134,12 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
               ),
             ),
 
+            IconButton(onPressed: () async {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const AllStoreScreen()));
+            },
+                icon: const Icon(Icons.refresh)),
+
+
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -150,7 +156,9 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
                 backgroundImage: NetworkImage(profilePhoto),
               ),
             ),
+
           ],
+
         ),
         leading: PopupMenuButton(
           icon: const Icon(Icons.menu),

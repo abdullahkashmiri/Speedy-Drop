@@ -156,6 +156,12 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                 ),
               ),
 
+              IconButton(onPressed: () async {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProductsInStore(owner_id: ownerId, delivery_time: deliveryTime)));
+              },
+                  icon: const Icon(Icons.refresh)),
+
+
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 // Adjust the border radius as needed

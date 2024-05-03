@@ -41,6 +41,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
   double latitude = 0.0;
   double longitude = 0.0;
   int popularStoreMinSales = 35;
+  bool isDataLoaded = false;
 
 
   //Functions
@@ -160,6 +161,11 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                 ),
               ),
 
+              IconButton(onPressed: () async {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreenBuyer()));
+              },
+                  icon: const Icon(Icons.refresh)),
+
               GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -278,7 +284,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                   ),
                   padding: const EdgeInsets.all(10),
                   child: const Icon(
-                    Icons.shopping_basket,
+                    Icons.shopping_cart,
                     color: Colors.white,
                   ),
                 ) : GestureDetector(
@@ -288,7 +294,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                     }));
                   },
                   child: const Icon(
-                    Icons.shopping_basket,
+                    Icons.shopping_cart,
                     color: Colors.grey,
                     size: 30.0,
                   ),
@@ -296,15 +302,17 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                 label: '',
               ),
               BottomNavigationBarItem(
-                icon: _currentIndex == 2 ? Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _currentIndex == 2 ? _orangeColor : Colors.grey,
-                  ),
-                  padding: const EdgeInsets.all(10),
-                  child: const Icon(
-                    Icons.messenger,
-                    color: Colors.white,
+                icon: _currentIndex == 2 ? GestureDetector(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _currentIndex == 2 ? _orangeColor : Colors.grey,
+                    ),
+                    padding: const EdgeInsets.all(10),
+                    child: const Icon(
+                      Icons.receipt,
+                      color: Colors.white,
+                    ),
                   ),
                 ) : GestureDetector(
                   onTap: () {
@@ -313,7 +321,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                     }));
                   },
                   child: const Icon(
-                    Icons.messenger,
+                    Icons.receipt,
                     color: Colors.grey,
                     size: 30.0,
                   ),

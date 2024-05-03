@@ -152,6 +152,14 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                 ),
               ),
 
+
+              IconButton(onPressed: () async {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DisplayCartScreen()));
+              },
+                  icon: const Icon(Icons.refresh)),
+
+
+
               GestureDetector(
                 onTap: () {
                   Navigator.push(
