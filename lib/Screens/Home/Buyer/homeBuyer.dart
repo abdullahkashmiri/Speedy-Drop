@@ -441,59 +441,6 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                           ],
                         ),
                         const SizedBox(height: 10.0,),
-                        // SizedBox(
-                        //   height: 120, // Adjust height as needed
-                        //   child: ListView.builder(
-                        //     scrollDirection: Axis.horizontal,
-                        //     itemCount: itemList.length,
-                        //     itemBuilder: (context, index) {
-                        //       return Container(
-                        //         width: 120,
-                        //         height: 100,
-                        //         margin: const EdgeInsets.all(8),
-                        //         decoration: BoxDecoration(
-                        //           color: Colors.white,
-                        //           borderRadius: BorderRadius.circular(
-                        //               10), // Adjust the curve amount as needed
-                        //         ),
-                        //         child: Stack(
-                        //           children: [
-                        //             Positioned(
-                        //               top: 4,
-                        //               left: 4,
-                        //               child: Padding(
-                        //                 padding: const EdgeInsets.all(8.0),
-                        //                 child: Text(
-                        //                   itemList[index]["name"]!,
-                        //                   style: const TextStyle(color: Colors.black,
-                        //                       fontWeight: FontWeight.w500),
-                        //                 ),
-                        //               ),
-                        //             ),
-                        //             Positioned(
-                        //               bottom: -30,
-                        //               right: -10,
-                        //               child: ClipOval(
-                        //                 child: Container(
-                        //                   width: 100,
-                        //                   // Adjust width to control the size of the circular portion
-                        //                   height: 100,
-                        //                   // Adjust height to control the size of the circular portion
-                        //                   color: Colors.blueGrey,
-                        //                   // Match the container's color
-                        //                   child: Image.network(
-                        //                     itemList[index]["imageUrl"]!,
-                        //                     fit: BoxFit.cover,
-                        //                   ),
-                        //                 ),
-                        //               ),
-                        //             ),
-                        //           ],
-                        //         ),
-                        //       );
-                        //     },
-                        //   ),
-                        // ),
 
                         SizedBox(
                           height: 120, // Adjust height as needed

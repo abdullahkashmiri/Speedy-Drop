@@ -94,12 +94,6 @@ class _ProductScreenState extends State<ProductScreen> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              // IconButton(
-              //   icon: const Icon(Icons.keyboard_arrow_down, size: 30.0,),
-              //   onPressed: () {
-              //     // ----------------------------- location update
-              //   },
-              // ),
 
               ClipRRect(
                 borderRadius: BorderRadius.circular(10), // Adjust the border radius as needed

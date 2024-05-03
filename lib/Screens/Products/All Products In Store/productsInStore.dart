@@ -160,21 +160,18 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                 borderRadius: BorderRadius.circular(10),
                 // Adjust the border radius as needed
                 child: storeImageLink == ''
-                    ? Container( // Placeholder container if storeImageLink is empty
+                    ? Container(
                   width: 40,
-                  // Adjust the width as needed
                   height: 40,
-                  // Adjust the height as needed
                   color: Colors.blue,
-                  // Set background color if storeImageLink is empty
                   child: Center(
                     child: Image.asset(_profileImage), // Use default image
                   ),
                 )
                     : Image.network(
                   storeImageLink!,
-                  width: 40, // Adjust the width as needed
-                  height: 40, // Adjust the height as needed
+                  width: 40,
+                  height: 40,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -219,17 +216,10 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                       (route) => false, // This condition removes all routes from the stack
                 );
 
-                // Navigator.pushReplacement(
-                //     context, MaterialPageRoute(builder: (context) {
-                //   return const HomeScreenBuyer();
-                // }));
+
               } else if (value == 'logout') {
                 dev.log('logout');
                 _auth_service.signOut();
-                // Navigator.pushReplacement(
-                //     context, MaterialPageRoute(builder: (context) {
-                //   return const SignIn();
-                // }));
 
                 Navigator.pushAndRemoveUntil(
                   context,
@@ -397,92 +387,6 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                             );
                           },
                         ),
-                        // child: GridView.builder(
-                        //   itemCount: products.length,
-                        //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        //     crossAxisCount: 3, // Two products per row
-                        //     mainAxisSpacing: 5.0,
-                        //     crossAxisSpacing: 5.0,
-                        //     childAspectRatio: 0.7,
-                        //   ),
-                        //   itemBuilder: (context, index) {
-                        //     Map<String,
-                        //         dynamic> product = products[index];
-                        //     return GestureDetector(
-                        //       onTap: () {
-                        //         Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        //           return ProductScreen(locationName: locationName, product:  product, storeImage: storeImageLink);
-                        //         }));
-                        //       },
-                        //       child: Card(
-                        //         elevation: 4,
-                        //         // Add elevation for a shadow effect
-                        //         shape: RoundedRectangleBorder(
-                        //           borderRadius: BorderRadius.circular(
-                        //               10.0), // Rounded corners
-                        //         ),
-                        //         color: Colors.white,
-                        //         child: Column(
-                        //           crossAxisAlignment: CrossAxisAlignment
-                        //               .start,
-                        //           children: [
-                        //             // Display product image (assuming 'images' is a list of image URLs)
-                        //             ClipRRect(
-                        //               borderRadius: const BorderRadius
-                        //                   .vertical(
-                        //                   top: Radius.circular(10.0)),
-                        //               child: Image.network(
-                        //                 product['images'][0],
-                        //                 // Assuming the first image URL is used
-                        //                 width: double.infinity,
-                        //                 height: 90.0,
-                        //                 fit: BoxFit.cover,
-                        //               ),
-                        //             ),
-                        //             Padding(
-                        //               padding: const EdgeInsets.all(3.0),
-                        //               child: Column(
-                        //                 crossAxisAlignment: CrossAxisAlignment
-                        //                     .start,
-                        //                 children: [
-                        //                   Text(
-                        //                     product['product-name'],
-                        //                     style: const TextStyle(
-                        //                       fontSize: 12.0,
-                        //                       fontWeight: FontWeight.bold,
-                        //                     ),
-                        //                     maxLines: 1, // Display only one line
-                        //                     overflow: TextOverflow.ellipsis, // Truncate text with ellipsis if it exceeds one line
-                        //                   ),
-                        //                   Text(
-                        //                     '${product['category']}',
-                        //                     style: TextStyle(
-                        //                         fontSize: 10.0,
-                        //                         color: _orangeColor,
-                        //                       fontWeight: FontWeight.bold
-                        //                     ),
-                        //                     maxLines: 1, // Display only one line
-                        //                     overflow: TextOverflow.ellipsis,
-                        //                   ),
-                        //
-                        //                   Text(
-                        //                     'Price: ${product['price']}',
-                        //                     style: const TextStyle(
-                        //                       fontSize: 10.0,
-                        //                     ),
-                        //                       maxLines: 1, // Display only one line
-                        //                       overflow: TextOverflow.ellipsis,
-                        //                   ),
-                        //
-                        //                 ],
-                        //               ),
-                        //             ),
-                        //           ],
-                        //         ), // Set the background color of the card
-                        //       ),
-                        //     );
-                        //   },
-                        // ),
                       ),
                     ],
                   ),

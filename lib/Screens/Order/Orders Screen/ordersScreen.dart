@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -8,7 +7,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Screens/Order/Order%20Details/orderDetailsScreen.dart';
 import 'package:speedydrop/Services/Database/database.dart';
-
 import '../../../Services/Auth/auth.dart';
 import '../../Account/user_account.dart';
 import '../../Authentication/Sign In/signin.dart';
@@ -408,25 +406,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
                       ),
                     ),
-
-                    // ElevatedButton(
-                    //   onPressed: () async {},
-                    //   style: ElevatedButton.styleFrom(
-                    //     backgroundColor: _orangeColor,
-                    //   ),
-                    //   child: const Row(
-                    //     mainAxisAlignment: MainAxisAlignment.center,
-                    //     children: [
-                    //       Icon(Icons.shopping_cart,
-                    //         color: Colors.white,),
-                    //       SizedBox(width: 10.0),
-                    //       Text("CheckOut!",
-                    //         style: TextStyle(color: Colors.white,
-                    //             fontSize: 16.0, fontWeight: FontWeight.bold),),
-                    //     ],
-                    //   ),
-                    // ),
-                    // const SizedBox(height: 5.0,),
                   ]
               ),
             )

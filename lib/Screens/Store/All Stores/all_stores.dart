@@ -13,8 +13,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../Home/Buyer/homeBuyer.dart';
-
 
 class AllStoreScreen extends StatefulWidget {
   const AllStoreScreen({super.key});
@@ -187,17 +185,9 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
             if (value == 'buyer-mode') {
               dev.log('buyer-mode');
               Navigator.pop(context);
-              // Navigator.pushReplacement(
-              //     context, MaterialPageRoute(builder: (context) {
-              //   return const HomeScreenBuyer();
-              // }));
             }  else if (value == 'logout') {
               dev.log('logout');
               _auth_service.signOut();
-              // Navigator.pushReplacement(
-              //     context, MaterialPageRoute(builder: (context) {
-              //   return const SignIn();
-              // }));
               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => SignIn()),
