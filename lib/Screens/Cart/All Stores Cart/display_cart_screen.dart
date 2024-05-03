@@ -1,10 +1,7 @@
 import 'dart:developer' as dev;
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:speedydrop/Screens/Account/user_account.dart';
 import 'package:speedydrop/Screens/Authentication/Sign%20In/signin.dart';
-import 'package:speedydrop/Screens/Cart/cart_screen.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Services/Auth/auth.dart';
 import 'package:speedydrop/Services/Database/database.dart';
@@ -12,7 +9,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../Home/Buyer/homeBuyer.dart';
+import '../../Home/Buyer/homeBuyer.dart';
+import '../Cart Screen/cart_screen.dart';
 
 
 class DisplayCartScreen extends StatefulWidget {

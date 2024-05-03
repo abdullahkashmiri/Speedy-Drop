@@ -2,22 +2,17 @@ import 'dart:async';
 import 'dart:developer' as dev;
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:speedydrop/Screens/Account/user_account.dart';
 import 'package:speedydrop/Screens/Authentication/Sign%20In/signin.dart';
-import 'package:speedydrop/Screens/Home/Seller/homeSeller.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Screens/Order/Orders%20Screen/ordersScreen.dart';
-import 'package:speedydrop/Screens/Products/All%20Products%20In%20Store/productsInStore.dart';
 import 'package:speedydrop/Services/Auth/auth.dart';
 import 'package:speedydrop/Services/Database/database.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-import '../Home/Buyer/homeBuyer.dart';
-
+import '../../Home/Buyer/homeBuyer.dart';
 
 class CartScreen extends StatefulWidget {
   final Map<int, Map<String, dynamic>> cart_products;
@@ -443,42 +438,6 @@ class _CartScreenState extends State<CartScreen> {
                             double val = selectedQuantity * price;
                             int calculatedPrice = val.toInt();
 
-                            // String userId = allStoreData.keys.elementAt(index);
-                            // Map<String, dynamic> userData = allStoreData[userId]!;
-                            // String ownerId = '';
-                            // ownerId = userData['owner-id'];
-                            // var storeName = userData['store-details']['store-name'];
-                            // var storeDesc = userData['store-details']['store-description'];
-                            // var selectedDays = List<String>.from(userData['store-details']['selectedDays']);
-                            // var openHours = userData['store-details']['openingHours'];
-                            // var closeHours = userData['store-details']['closingHours'];
-                            // var lat = userData['store-details']['address']['latitude'];
-                            // var long = userData['store-details']['address']['longitude'];
-                            // var contactNum = userData['store-details']['contact-number'];
-                            // var storeImgLink = userData['store-details']['store-image'];
-                            // var sales = userData['store-details']['sales'];
-
-                            // // Get the current date and time
-                            // DateTime now = DateTime.now();
-                            // String dayAbbreviation = DateFormat.E().format(now); // "E" gives the abbreviated day name
-                            // String formattedDay = dayAbbreviation.substring(0, 3); // Take the first three characters
-                            // bool isDaySelected = selectedDays.contains(formattedDay);
-                            // String formattedTime = DateFormat('h:mm a').format(now);
-                            // DateTime openTime = DateFormat('h:mm a').parse(openHours);
-                            // DateTime closeTime = DateFormat('h:mm a').parse(closeHours);
-                            // DateTime parsedTime = DateFormat('h:mm a').parse(formattedTime);
-                            // bool isOpen = ((parsedTime.isAfter(openTime) && parsedTime.isBefore(closeTime)) ||
-                            //     (parsedTime.isAtSameMomentAs(openTime) || parsedTime.isAtSameMomentAs(closeTime)));
-                            // bool isOpenTimeMidnight = openTime.hour == 0 && openTime.minute == 0 && openTime.second == 0;
-                            // bool isCloseTimeMidnight = closeTime.hour == 0 && closeTime.minute == 0 && closeTime.second == 0;
-                            // if (isOpenTimeMidnight && isCloseTimeMidnight) {
-                            //   isOpen = true;
-                            // }
-                            // double storeRadius = double.parse(calculateRadius(latitude, longitude, lat, long).toStringAsFixed(1));
-                            // double deliveryTime = storeRadius * 8;
-                            // if(deliveryTime < 30){
-                            //   deliveryTime = 30;
-                            // }
 
                             return Container(
                               margin: const EdgeInsets.symmetric(
@@ -722,7 +681,6 @@ class _CartScreenState extends State<CartScreen> {
                           bool isUpdated = await Database_Service(userId: _auth_service.getUserId()).updateProductDetailsOfCart(cartProducts, orderProducts, deliveryCharges, totalCharges, estimatedDelivery, storeName!, storeImageLink!, vendorId);
                           print("is updated : $isUpdated");
                           if(isUpdated) {
-                            Navigator.pop(context);
                             Navigator.pop(context);
                             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
                               return const OrdersScreen();

@@ -10,7 +10,7 @@ import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Screens/Order/Orders%20Screen/ordersScreen.dart';
 import 'package:speedydrop/Services/Auth/auth.dart';
 import 'package:speedydrop/Services/Database/database.dart';
-import '../../Cart/display_cart_screen.dart';
+import '../../Cart/All Stores Cart/display_cart_screen.dart';
 import '../../Products/All Products In Store/productsInStore.dart';
 import '../../Store/All Stores/all_stores.dart';
 import '../Rider/homeRider.dart';
