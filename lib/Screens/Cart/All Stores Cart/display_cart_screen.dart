@@ -71,11 +71,67 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
     }
   }
 
+
+  Map<int, Map<String, dynamic>> removeDuplicates() {
+    Map<String, Map<String, dynamic>> uniqueProducts = {};
+
+    cartProducts.forEach((index, productData) {
+      final String productId = productData['product-id'];
+      final int selectedQuantity = productData['selected-quantity'] ?? 0;
+
+      if (uniqueProducts.containsKey(productId)) {
+        print("Contained id : $productId");
+        uniqueProducts[productId]!['selected-quantity'] = (uniqueProducts[productId]!['selected-quantity'] ?? 0) + selectedQuantity;
+      } else {
+        uniqueProducts[productId] = {
+          'product-id': productId,
+          'vendor-id': productData['vendor-id'],
+          'product-name': productData['product-name'],
+          'description': productData['description'],
+          'price': productData['price'],
+          'quantity': productData['quantity'],
+          'availability': productData['availability'],
+          'images': List<String>.from(productData['images']),
+          'selected-quantity': selectedQuantity,
+          'category': productData['category']
+        };
+      }
+    });
+
+    int index = 0;
+    // Create a new map with simple numerical indices
+    Map<int, Map<String, dynamic>> newUniqueProducts = {};
+    uniqueProducts.forEach((key, value) {
+      newUniqueProducts[index++] = value;
+    });
+
+    return newUniqueProducts;
+  }
+
+  void removeZeroQuantityItems() {
+    int newIndex = 0;
+    final Map<int, Map<String, dynamic>> updatedCartProducts = {};
+
+    cartProducts.forEach((index, productData) {
+      final int quantity = productData['quantity'] ?? 0;
+
+      // Only add items with quantity greater than 0
+      if (quantity > 0) {
+        updatedCartProducts[newIndex++] = productData;
+      }
+    });
+
+    // Update the original cartProducts map
+    cartProducts = updatedCartProducts;
+  }
+
   Future<void> initializeData() async {
     // Fetch cart products
     cartProducts = await Database_Service(userId: _auth_service.getUserId())
         .fetchAllProductDetailsOfCart();
 
+    cartProducts = removeDuplicates();
+    removeZeroQuantityItems();
 
     Set<String> uniqueVendorIds = Set();
 
@@ -108,8 +164,6 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
       isLoading = false;
     });
 
-    print('Is Loading');
-    print(isLoading);
   }
 
   void getVendorProducts(String selectedVendorId) {
@@ -302,7 +356,13 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                             int selectedQuantity = product?['selected-quantity'];
                             double val = selectedQuantity * price;
                             int calculatedPrice = val.toInt();
+                            String category = product?['category'] ?? '';
 
+
+                            if(selectedQuantity > productQuantity) {
+                              selectedQuantity = productQuantity;
+                            }
+                            cartProducts[index]?['selected-quantity'] = selectedQuantity;
 
                             if (index == 0 ||
                                 (cartProductsSorted[index - 1]?['vendor-id'] ==

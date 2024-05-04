@@ -305,6 +305,7 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                           itemCount: products.length,
                           itemBuilder: (context, index) {
                             Map<String, dynamic> product = products[index];
+
                             return GestureDetector(
                               onTap: () {
                                 Navigator.push(context,
@@ -341,7 +342,7 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                                           fit: BoxFit.cover,
                                         ),
                                       ),
-                                      SizedBox(width: 8.0),
+                                      const SizedBox(width: 8.0),
                                       // Add some space between image and text
                                       Expanded(
                                         child: Column(
@@ -350,7 +351,7 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                                           children: [
                                             Text(
                                               product['product-name'],
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontSize: 14.0,
                                                 fontWeight: FontWeight.bold,
                                               ),
@@ -359,7 +360,7 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                                             ),
                                             Text(
                                               product['description'],
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontSize: 12.0,
                                               ),
                                               maxLines: 2,
@@ -378,7 +379,7 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                                             ),
                                             Text(
                                               'Price: ${product['price']}',
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14.0,
                                               ),

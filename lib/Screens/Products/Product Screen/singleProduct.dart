@@ -68,7 +68,6 @@ class _ProductScreenState extends State<ProductScreen> {
     availability = product['availability'];
     imagesUrls = List<String>.from(product['images']);
     category = product['category'];
-
     setState(() {
       isLoading = false;
     });
@@ -367,7 +366,7 @@ class _ProductScreenState extends State<ProductScreen> {
                       ElevatedButton(
                         onPressed: () async {
                           // Handle add to cart
-                          if(selectedQuantity > 0 && selectedQuantity < quantity && subTotal > 0){
+                          if(selectedQuantity > 0 && selectedQuantity <= quantity && subTotal > 0){
                             setState(() {
                               _error = '';
                               isLoading = true;
@@ -379,7 +378,11 @@ class _ProductScreenState extends State<ProductScreen> {
                             });
                           } else {
                             setState(() {
-                              _error = 'No Product Selected';
+                              if(selectedQuantity==0) {
+                                _error = 'No Product Selected';
+                              } else {
+                                _error = 'Some Error Occurred';
+                              }
                             });
                           }
                         },

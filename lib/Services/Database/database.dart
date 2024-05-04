@@ -12,15 +12,18 @@ import '../../Constants/constants.dart';
 class Database_Service {
 
   final String userId;
+
   Database_Service({required this.userId});
 
   // -------------------------------------------------------------------------------------------------
   // Collection Reference
   // accounts
-  final CollectionReference accountsCollection = FirebaseFirestore.instance.collection('Accounts');
+  final CollectionReference accountsCollection = FirebaseFirestore.instance
+      .collection('Accounts');
 
   // products
-  final CollectionReference storeCollection = FirebaseFirestore.instance.collection('Store');
+  final CollectionReference storeCollection = FirebaseFirestore.instance
+      .collection('Store');
 
   // Firebase Storage
   FirebaseStorage storage = FirebaseStorage.instance;
@@ -28,7 +31,8 @@ class Database_Service {
   // -------------------------------------------------------------------------------------------------
   // Functions
 
-  Future<bool> initializeUserDataOnCloud(String userId, String userName, String email, String password,) async {
+  Future<bool> initializeUserDataOnCloud(String userId, String userName,
+      String email, String password,) async {
     try {
       LatLng defaultLocation = LatLng(0.0, 0.0);
 
@@ -79,8 +83,10 @@ class Database_Service {
     }
   }
 
-  Future<bool> createSellerMode(String storeName, String storeDescription, List<String> selectedDays, String openingHours,
-      String closingHours, LatLng storeLocation, String contactNumber, File storeImage) async {
+  Future<bool> createSellerMode(String storeName, String storeDescription,
+      List<String> selectedDays, String openingHours,
+      String closingHours, LatLng storeLocation, String contactNumber,
+      File storeImage) async {
     try {
       String ownerId = userId;
       int sales = 0;
@@ -113,13 +119,15 @@ class Database_Service {
     }
   }
 
-  Future<bool> createNewProduct(List<File> images, String productName, String description, double price, int quantity, String category) async {
+  Future<bool> createNewProduct(List<File> images, String productName,
+      String description, double price, int quantity, String category) async {
     try {
       String uniqueProductId = const Uuid().v4();
       List<String> imagesUrls = await uploadImagesOfProduct(
           images, uniqueProductId); // Upload images and get URLs
       if (imagesUrls.isNotEmpty) {
-        await storeCollection.doc(userId).collection(category).doc(uniqueProductId).set({
+        await storeCollection.doc(userId).collection(category).doc(
+            uniqueProductId).set({
           'product-id': uniqueProductId,
           'vendor-id': userId,
           'product-name': productName,
@@ -139,7 +147,8 @@ class Database_Service {
     }
   }
 
-  Future<List<String>> uploadImagesOfProduct(List<File> images, String uniqueProductId) async {
+  Future<List<String>> uploadImagesOfProduct(List<File> images,
+      String uniqueProductId) async {
     List<String> downloadUrls = [];
     try {
       if (images.isEmpty) {
@@ -244,7 +253,8 @@ class Database_Service {
     return downloadUrl;
   }
 
-  Future<bool> updateUserDataOnCloud(String userName, String phoneNumber, LatLng markerLocation, String profileImage,) async {
+  Future<bool> updateUserDataOnCloud(String userName, String phoneNumber,
+      LatLng markerLocation, String profileImage,) async {
     try {
       await accountsCollection.doc(userId).update({
         'user-name': userName,
@@ -359,7 +369,8 @@ class Database_Service {
     }
   }
 
-  Future<bool> uploadDataInCartOnCloud(String productId, String vendorId, String category, int selectedQuantity) async {
+  Future<bool> uploadDataInCartOnCloud(String productId, String vendorId,
+      String category, int selectedQuantity) async {
     try {
       // Reference to the user's cart collection
       final CollectionReference cartCollection = accountsCollection.doc(userId)
@@ -395,7 +406,8 @@ class Database_Service {
       QuerySnapshot querySnapshot = await cartCollection.get();
 
       // Convert documents to a list of maps
-      List<Map<String, dynamic>> cartData = querySnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>)
+      List<Map<String, dynamic>> cartData = querySnapshot.docs.map((doc) =>
+      doc.data() as Map<String, dynamic>)
           .toList();
 
       return cartData;
@@ -406,7 +418,7 @@ class Database_Service {
     }
   }
 
-  Future<Map<int ,Map<String, dynamic>>> fetchAllProductDetailsOfCart() async {
+  Future<Map<int, Map<String, dynamic>>> fetchAllProductDetailsOfCart() async {
     try {
       List<Map<String,
           dynamic>> cartData = await fetchCartDataFromCloud();
@@ -441,6 +453,7 @@ class Database_Service {
             'availability': productData['availability'],
             'images': List<String>.from(productData['images']),
             'selected-quantity': selectedQuantity,
+            'category' : category
           };
           index++;
         }
@@ -453,8 +466,11 @@ class Database_Service {
     }
   }
 
-  Future<bool> updateProductDetailsOfCart(Map<int, Map<String, dynamic>> cartProducts, Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges,
-      int totalCharges, int deliveryTime, String storeName, String storeImageLink, String vendorId) async {
+  Future<bool> updateProductDetailsOfCart(
+      Map<int, Map<String, dynamic>> cartProducts,
+      Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges,
+      int totalCharges, int deliveryTime, String storeName,
+      String storeImageLink, String vendorId) async {
     try {
       final CollectionReference cartCollection = accountsCollection
           .doc(userId)
@@ -470,15 +486,23 @@ class Database_Service {
         String docId = doc.id;
         print('Product id: $productId');
         // Check if the product ID is in the cartProducts map
-        for(int i=0;i<cartProducts.length; i++) {
-          if(cartProducts[i]?['product-id'] == productId){
+        for (int i = 0; i < cartProducts.length; i++) {
+          if (cartProducts[i]?['product-id'] == productId) {
             print('found product');
             await cartCollection.doc(docId).delete();
           }
         }
       }
-      bool isOrderCreated = await uploadDataInOrderOnCloud(orderProducts, deliveryCharges, totalCharges, deliveryTime, storeName, storeImageLink, vendorId);
-      if(isOrderCreated) {
+
+      bool isOrderCreated = await uploadDataInOrderOnCloud(
+          orderProducts,
+          deliveryCharges,
+          totalCharges,
+          deliveryTime,
+          storeName,
+          storeImageLink,
+          vendorId);
+      if (isOrderCreated) {
         return true;
       } else {
         return false;
@@ -489,8 +513,10 @@ class Database_Service {
     }
   }
 
-  Future<bool> uploadDataInOrderOnCloud(Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges,
-      int totalCharges, int deliveryTime, String storeName, String storeImageLink, String vendorId) async {
+  Future<bool> uploadDataInOrderOnCloud(
+      Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges,
+      int totalCharges, int deliveryTime, String storeName,
+      String storeImageLink, String vendorId) async {
     try {
       // Reference to the user's cart collection
       final CollectionReference orderCollection = accountsCollection
@@ -500,10 +526,20 @@ class Database_Service {
       List<Map<String, dynamic>> confirmOrder = [];
 
 
-      for(int i=0; i< orderProducts.length; i++) {
+      for (int i = 0; i < orderProducts.length; i++) {
         confirmOrder.add(orderProducts[i]!);
       }
 
+      for (int i = 0; i < orderProducts.length; i++) {
+        String productId = orderProducts[i]?['product-id'];
+        String vendorId = orderProducts[i]?['vendor-id'];
+        int selectedQuantity = orderProducts[i]?['selected-quantity'];
+        String category = orderProducts[i]?['category'];
+        if(await updateProductQuantity(vendorId, category, productId, selectedQuantity)==false){
+          print("Unable to update quantity");
+          return false;
+        }
+      }
       DateTime now = DateTime.now();
       String formattedDate = DateFormat('dd/MM/yyyy hh:mm a').format(now);
       // Combine all data into a single map
@@ -512,9 +548,9 @@ class Database_Service {
         'deliveryCharges': deliveryCharges.toInt(),
         'totalCharges': totalCharges.toInt(),
         'deliveryTime': deliveryTime.toInt(),
-        'storeName' : storeName,
-        'storeImageLink' : storeImageLink,
-        'orderCreationTime' : formattedDate,
+        'storeName': storeName,
+        'storeImageLink': storeImageLink,
+        'orderCreationTime': formattedDate,
         'currentStage': 'placed'
       };
 
@@ -542,7 +578,7 @@ class Database_Service {
       // Retrieve documents from the Order collection
       QuerySnapshot querySnapshot = await orderCollection.get();
       int i = 0;
-       List<Map<String, dynamic>> allOrders = [];
+      List<Map<String, dynamic>> allOrders = [];
 
       querySnapshot.docs.forEach((doc) {
         String orderId = doc.id; // Using document ID as string
@@ -551,7 +587,6 @@ class Database_Service {
         i++;
       });
       return allOrders;
-
     } catch (error) {
       // Error occurred while fetching data
       print('Error fetching data from Firestore: $error');
@@ -575,7 +610,8 @@ class Database_Service {
   Future<void> incrementStoreSales(String vendorUserId) async {
     try {
       // Fetch the document snapshot
-      DocumentSnapshot<Map<String, dynamic>> snapshot = await storeCollection.doc(vendorUserId).get() as DocumentSnapshot<Map<String, dynamic>>;
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await storeCollection
+          .doc(vendorUserId).get() as DocumentSnapshot<Map<String, dynamic>>;
 
       if (snapshot.exists) {
         // Access the data from the snapshot
@@ -599,6 +635,30 @@ class Database_Service {
     }
   }
 
+  Future<bool> updateProductQuantity(String vendorId, String category, String uniqueProductId, int selectedQuantity) async {
+    try {
+      // Fetch current quantity of the product
+      DocumentSnapshot productSnapshot = await storeCollection.doc(vendorId).collection(category).doc(uniqueProductId).get();
+      int currentQuantity = productSnapshot.exists ? productSnapshot['quantity'] ?? 0 : 0;
+      int newQuantity = currentQuantity - selectedQuantity;
 
+      if(newQuantity>0) {
+        // Update quantity in Firestore
+        await storeCollection.doc(vendorId).collection(category).doc(
+            uniqueProductId).set({
+          'quantity': newQuantity,
+        }, SetOptions(
+            merge: true)); // Merge option updates only the specified fields without overwriting others
+      } else {
+        return false;
+      }
+      // Return true if update successful
+      return true;
+    } catch (error) {
+      // Return false if there's an error
+      print("Error updating quantity: $error");
+      return false;
+    }
+  }
 
 }

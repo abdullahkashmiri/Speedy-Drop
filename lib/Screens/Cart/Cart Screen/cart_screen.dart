@@ -67,8 +67,6 @@ class _CartScreenState extends State<CartScreen> {
   bool emptyCart = false;
   bool isStoreOpen = false;
 
-
-
   //Functions
   @override
   void initState() {
@@ -100,7 +98,6 @@ class _CartScreenState extends State<CartScreen> {
       }
     }
   }
-
 
   Future<bool> isStoreOpenForPlacingOrder(String openHours, String closeHours) async {
     // Get the current date and time
@@ -490,8 +487,6 @@ class _CartScreenState extends State<CartScreen> {
                             int selectedQuantity = product?['selected-quantity'];
                             double val = selectedQuantity * price;
                             int calculatedPrice = val.toInt();
-
-
                             return Container(
                               margin: const EdgeInsets.symmetric(
                                   vertical: 5.0),
