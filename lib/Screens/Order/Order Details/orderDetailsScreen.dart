@@ -466,9 +466,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                 text: TextSpan(
                                   style: const TextStyle(fontSize: 16.0, color: Colors.black),
                                   children: [
-                                    const TextSpan(text: 'Total Charges: '),
+                                    const TextSpan(text: 'Delivery Charges: '),
                                     TextSpan(
-                                      text: '$totalCharges',
+                                      text: '$deliveryCharges',
                                       style: TextStyle(color: _orangeColor, fontWeight: FontWeight.bold), // Use orange color for the value
                                     ),
                                   ],
@@ -484,9 +484,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                                 text: TextSpan(
                                   style: const TextStyle(fontSize: 16.0, color: Colors.black),
                                   children: [
-                                    const TextSpan(text: 'Delivery Charges: '),
+                                    const TextSpan(text: 'Total Charges:       '),
                                     TextSpan(
-                                      text: '$deliveryCharges',
+                                      text: '$totalCharges',
                                       style: TextStyle(color: _orangeColor, fontWeight: FontWeight.bold), // Use orange color for the value
                                     ),
                                   ],
