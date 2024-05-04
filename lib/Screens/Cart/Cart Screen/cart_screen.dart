@@ -14,6 +14,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../Home/Buyer/homeBuyer.dart';
+import 'package:roundcheckbox/roundcheckbox.dart';
+
 
 class CartScreen extends StatefulWidget {
   final Map<int, Map<String, dynamic>> cart_products;
@@ -67,6 +69,9 @@ class _CartScreenState extends State<CartScreen> {
   bool emptyCart = false;
   bool isStoreOpen = false;
 
+
+  bool isCurrentLocationSelected = true;
+  bool isAccountLocationSelected = false;
   //Functions
   @override
   void initState() {
@@ -373,7 +378,7 @@ class _CartScreenState extends State<CartScreen> {
                           ),
                         ],
                       ),
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.all(10.0),
                       // Add padding around the content
                       child: Row(
                         children: [
@@ -387,7 +392,6 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                           ),
                           const SizedBox(width: 16.0),
-                          // Add horizontal spacing between image and text
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -402,7 +406,6 @@ class _CartScreenState extends State<CartScreen> {
                                   maxLines: 2,
                                 ),
                                 const SizedBox(height: 3.0),
-                                // Add vertical spacing between store name and distance
                                 Text(
                                   'Just $calculateDistance Km Away',
                                   style: const TextStyle(
@@ -411,14 +414,83 @@ class _CartScreenState extends State<CartScreen> {
                                   ),
 
                                 ),
-                                const SizedBox(height: 4.0),
-                                // Add vertical spacing between distance and delivery time
                                 Text(
                                   'Est Delivery $estimatedDelivery mins',
                                   style: const TextStyle(
                                     fontSize: 12.0,
                                     color: Colors.grey,
                                   ),
+                                ),
+                                const SizedBox(height: 3.0),
+                                const Text(
+                                  'Select Delivery Location',
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                const SizedBox(height: 3.0),
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'Current ',
+                                      style: TextStyle(
+                                        fontSize: 12.0,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 2.0),
+                                    RoundCheckBox(
+                                      isChecked: isCurrentLocationSelected,
+                                      onTap: (bool? val) {
+                                        if (val != null && val) {
+                                          setState(() {
+                                            isCurrentLocationSelected = true;
+                                            isAccountLocationSelected = false;
+                                          });
+                                        } else if (isCurrentLocationSelected) {
+                                          setState(() {
+                                            isCurrentLocationSelected = false;
+                                            isAccountLocationSelected = true;
+                                          });
+                                        }
+                                      },
+                                      checkedColor: _orangeColor,
+                                      checkedWidget: const Icon(Icons.location_on,
+                                        color: Colors.white,
+                                        size: 14.0,),
+                                      size: 18.0,                                    ),
+                                    const SizedBox(width: 4.0),
+                                    const Text(
+                                      'Account ',
+                                      style: TextStyle(
+                                        fontSize: 12.0,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 2.0),
+                                    RoundCheckBox(
+                                      isChecked: isAccountLocationSelected,
+                                      onTap: (bool? val) {
+                                        if (val != null && val) {
+                                          setState(() {
+                                            isAccountLocationSelected = true;
+                                            isCurrentLocationSelected = false;
+                                          });
+                                        } else if (isAccountLocationSelected) {
+                                          setState(() {
+                                            isAccountLocationSelected = false;
+                                            isCurrentLocationSelected = true;
+                                          });
+                                        }
+                                      },
+                                      checkedWidget: const Icon(Icons.location_on,
+                                        color: Colors.white,
+                                        size: 14.0,),
+                                      size: 18.0,
+                                      checkedColor: _orangeColor,
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -435,7 +507,6 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                     ),
                     const SizedBox(height: 2.0,),
-
                     RichText(
                       text: TextSpan(
                         children: [
@@ -464,16 +535,13 @@ class _CartScreenState extends State<CartScreen> {
                         ],
                       ),
                     ),
-
-                    const SizedBox(height: 10.0,),
+                    const SizedBox(height: 2.0,),
                     Expanded(
                       child: ListView.builder(
                           scrollDirection: Axis.vertical,
                           itemCount: cartProducts.length,
                           itemBuilder: (context, index) {
-                            Map<String,
-                                dynamic>? product = cartProducts[index];
-
+                            Map<String, dynamic>? product = cartProducts[index];
 
                             String productId = product?['product-id'];
                             String vendorId = product?['vendor-id'];
@@ -487,9 +555,9 @@ class _CartScreenState extends State<CartScreen> {
                             int selectedQuantity = product?['selected-quantity'];
                             double val = selectedQuantity * price;
                             int calculatedPrice = val.toInt();
+
                             return Container(
-                              margin: const EdgeInsets.symmetric(
-                                  vertical: 5.0),
+                              margin: const EdgeInsets.symmetric(vertical: 5.0),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(
@@ -499,166 +567,153 @@ class _CartScreenState extends State<CartScreen> {
                                   BoxShadow(
                                     color: Colors.grey.withOpacity(
                                         0.2),
-                                    // Shadow color
                                     spreadRadius: 2,
-                                    // Spread radius
                                     blurRadius: 5,
-                                    // Blur radius
                                     offset: const Offset(
                                         0, 2), // Shadow position
                                   ),
                                 ],
                               ),
-                              child: GestureDetector(
-                                onTap: () {
-                                  // Add your onTap functionality here
-
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.all(12.0),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors.grey.shade300),
-                                    borderRadius: BorderRadius.circular(12.0),
-                                  ),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .start,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Image.network(
-                                          productImages[0],
-                                          fit: BoxFit.cover,
-                                          width: 120,
-                                          height: 120,
-                                        ),
+                              child: Container(
+                                padding: EdgeInsets.all(12.0),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Colors.grey.shade300),
+                                  borderRadius: BorderRadius.circular(12.0),
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment
+                                      .start,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.network(
+                                        productImages[0],
+                                        fit: BoxFit.cover,
+                                        width: 100,
+                                        height: 100,
                                       ),
-                                      const SizedBox(width: 12.0),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment
-                                              .start,
-                                          children: [
-                                            Text(
-                                              productName,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                fontSize: 16.0,
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w500,
-                                              ),
+                                    ),
+                                    const SizedBox(width: 12.0),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment
+                                            .start,
+                                        children: [
+                                          Text(
+                                            productName,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 16.0,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w500,
                                             ),
-                                            const SizedBox(height: 4.0),
-                                            Text(
-                                              productDescription,
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 2,
-                                              style: const TextStyle(
-                                                color: Colors.grey,
-                                                fontSize: 14.0,
+                                          ),
+                                          const SizedBox(height: 2.0),
+                                          Text(
+                                            productDescription,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 2,
+                                            style: const TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 14.0,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment
+                                          .spaceBetween,
+                                      children: [
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Checkbox(
+                                              value: isChecked[index],
+                                              onChanged: (value) {
+                                                _error = '';
+                                                emptyCart = false;
+                                                setState(() {
+                                                  if (value == true) {
+                                                    isChecked[index] = true;
+                                                    double v =  price * selectedQuantity;
+                                                    subTotal += v.toInt();
+                                                    totalCharges = subTotal + deliveryCharges;
+                                                  } else {
+                                                    isChecked[index] = false;
+                                                    double v =  price * selectedQuantity;
+                                                    subTotal -= v.toInt();
+                                                    totalCharges = subTotal + deliveryCharges;
+                                                  }
+                                                });
+                                              },
+                                              activeColor: isChecked[index]
+                                                  ? _orangeColor
+                                                  : Colors.grey,
+                                            ),
+                                            const SizedBox(width: 4.0),
+                                            IconButton(
+                                              onPressed: () {
+                                                _error = '';
+                                                emptyCart = false;
+                                                setState(() {
+                                                  if (isChecked[index] ==
+                                                      true) {
+                                                    double v =  price * selectedQuantity;
+                                                    subTotal -= v.toInt();
+                                                    isChecked[index] = false;
+                                                    totalCharges = subTotal + deliveryCharges;
+                                                  } else {
+                                                    double v =  price * selectedQuantity;
+                                                    subTotal += v.toInt();
+                                                    isChecked[index] = true;
+                                                    totalCharges = subTotal + deliveryCharges;
+
+                                                  }
+                                                });
+                                              },
+                                              icon: Icon(
+                                                Icons.delete,
+                                                color: !isChecked[index]
+                                                    ? Colors.red
+                                                    : Colors.grey,
+                                                size: 30.0,
                                               ),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                      Column(
-                                        mainAxisAlignment: MainAxisAlignment
-                                            .spaceBetween,
-                                        children: [
-
-                                          Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Checkbox(
-                                                value: isChecked[index],
-                                                onChanged: (value) {
-                                                  _error = '';
-                                                  emptyCart = false;
-                                                  setState(() {
-                                                    if (value == true) {
-                                                      isChecked[index] = true;
-                                                      double v =  price * selectedQuantity;
-                                                      subTotal += v.toInt();
-                                                      totalCharges = subTotal + deliveryCharges;
-                                                    } else {
-                                                      isChecked[index] = false;
-                                                      double v =  price * selectedQuantity;
-                                                      subTotal -= v.toInt();
-                                                      totalCharges = subTotal + deliveryCharges;
-                                                    }
-                                                  });
-                                                },
-                                                activeColor: isChecked[index]
-                                                    ? _orangeColor
-                                                    : Colors.grey,
-                                              ),
-
-
-                                              SizedBox(width: 8.0),
-                                              IconButton(
-                                                onPressed: () {
-                                                  _error = '';
-                                                  emptyCart = false;
-                                                  setState(() {
-                                                    if (isChecked[index] ==
-                                                        true) {
-                                                      double v =  price * selectedQuantity;
-                                                      subTotal -= v.toInt();
-                                                      isChecked[index] = false;
-                                                      totalCharges = subTotal + deliveryCharges;
-                                                    } else {
-                                                      double v =  price * selectedQuantity;
-                                                      subTotal += v.toInt();
-                                                      isChecked[index] = true;
-                                                      totalCharges = subTotal + deliveryCharges;
-
-                                                    }
-                                                  });
-                                                },
-                                                icon: Icon(
-                                                  Icons.delete,
-                                                  color: !isChecked[index]
-                                                      ? Colors.red
-                                                      : Colors.grey,
-                                                  size: 30.0,
-                                                ),
-                                              ),
-
-                                            ],
+                                        const SizedBox(height: 2.0),
+                                        Text(
+                                          'Qty: $selectedQuantity',
+                                          style: const TextStyle(
+                                            color: Colors.grey,
+                                            fontWeight: FontWeight.bold,
                                           ),
-                                          const SizedBox(height: 8.0),
-                                          Text(
-                                            'Qty: $selectedQuantity',
-                                            style: const TextStyle(
-                                              color: Colors.grey,
-                                              fontWeight: FontWeight.bold,
+                                        ),
+                                        const SizedBox(height: 5.0),
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              'Rs. $calculatedPrice',
+                                              style: const TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
-                                          ),
-                                          const SizedBox(height: 5.0),
-                                          Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                '$calculatedPrice',
-                                                style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              SizedBox(width: 4),
-                                              Icon(
-                                                Icons.currency_rupee,
-                                                color: _orangeColor,
-                                                size: 16,
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                                            SizedBox(width: 4),
+                                            Icon(
+                                              Icons.currency_rupee,
+                                              color: _orangeColor,
+                                              size: 16,
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
 
@@ -667,7 +722,6 @@ class _CartScreenState extends State<CartScreen> {
 
                       ),
                     ),
-
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -686,23 +740,31 @@ class _CartScreenState extends State<CartScreen> {
                         padding: const EdgeInsets.all(8.0),
                         child: Column(
                           children: [
-                            Text('Subtotal: $subTotal',
-                            style: const TextStyle(color: Colors.black,
-                            fontSize: 16.0, fontWeight: FontWeight.bold),),
-                            Text('Delivery Charges: $deliveryCharges',
-                              style: const TextStyle(color: Colors.black,
-                                  fontSize: 16.0, fontWeight: FontWeight.bold),),
-                            Text('Total: $totalCharges',
-                              style:  TextStyle(color: _orangeColor,
-                                  fontSize: 16.0, fontWeight: FontWeight.bold),),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Text('Now',style: TextStyle(color: _orangeColor, fontWeight: FontWeight.bold, fontSize: 18.0),),
-                                const SizedBox(width: 5.0,),
-                                const Icon(Icons.currency_rupee),
-                                const SizedBox(width: 5.0,),
-                                const Text('Cash on Delivery'),
+                                Text('Subtotal: $subTotal',
+                                  style: const TextStyle(color: Colors.black,
+                                      fontSize: 16.0, fontWeight: FontWeight.bold),),
+                                Text('Delivery: $deliveryCharges',
+                                  style: const TextStyle(color: Colors.black,
+                                      fontSize: 16.0, fontWeight: FontWeight.bold),),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text('Total: $totalCharges',
+                                  style:  TextStyle(color: _orangeColor,
+                                      fontSize: 16.0, fontWeight: FontWeight.bold),),
+                                 Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.currency_rupee, color: _orangeColor,),
+                                    const SizedBox(width: 5.0,),
+                                    const Text('Cash on Delivery', style: TextStyle(fontWeight: FontWeight.bold),),
+                                  ],
+                                ),
                               ],
                             ),
                           ],
@@ -727,17 +789,26 @@ class _CartScreenState extends State<CartScreen> {
                             setState(() {
                               isLoading = true;
                             });
+                            LatLng storeLocation = LatLng(storeLatitude!, storeLongitude!);
+                            LatLng customerCurrentLocation = LatLng(latitude, longitude);
+                            LatLng? customerProfileLocation = await Database_Service(userId: _auth_service.getUserId()).fetchUserProfileLocation();
+
+                            LatLng? customerLocation;
+                            if(isCurrentLocationSelected) {
+                              customerLocation = customerCurrentLocation;
+                            } else {
+                              customerLocation = customerProfileLocation;
+                            }
+
                             bool isUpdated = await Database_Service(
                                 userId: _auth_service.getUserId())
                                 .updateProductDetailsOfCart(
-                                cartProducts,
-                                orderProducts,
-                                deliveryCharges,
-                                totalCharges,
-                                estimatedDelivery,
-                                storeName!,
-                                storeImageLink!,
-                                vendorId);
+                                cartProducts, orderProducts, deliveryCharges, totalCharges, estimatedDelivery,
+                                storeName!, storeImageLink!, vendorId, customerLocation!, storeLocation);
+
+                            print(customerLocation);
+                            print(storeLocation);
+
                             print("is updated : $isUpdated");
                             if (isUpdated) {
                               Navigator.pop(context);

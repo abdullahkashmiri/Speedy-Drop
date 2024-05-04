@@ -306,31 +306,32 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                           itemBuilder: (context, index) {
                             Map<String, dynamic> product = products[index];
 
+                            bool isProductAvaliable = (product['quantity'] == 0 ? false : true);
+                            print(product['quantity']);
                             return GestureDetector(
                               onTap: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
-                                      return ProductScreen(
-                                          locationName: locationName,
-                                          product: product,
-                                          storeImage: storeImageLink);
-                                    }));
+                                if(isProductAvaliable) {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) {
+                                        return ProductScreen(
+                                            locationName: locationName,
+                                            product: product,
+                                            storeImage: storeImageLink);
+                                      }));
+                                }
                               },
                               child: Card(
                                 elevation: 4,
                                 // Add elevation for a shadow effect
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      10.0), // Rounded corners
+                                  borderRadius: BorderRadius.circular(10.0), // Rounded corners
                                 ),
-                                color: Colors.white,
+                                color: isProductAvaliable ?  Colors.white : Colors.grey.shade400,
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      // Display product image (assuming 'images' is a list of image URLs)
                                       ClipRRect(
                                         borderRadius: BorderRadius.circular(
                                             8.0),
@@ -343,7 +344,6 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                                         ),
                                       ),
                                       const SizedBox(width: 8.0),
-                                      // Add some space between image and text
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment
@@ -384,6 +384,14 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                                                 fontSize: 14.0,
                                               ),
                                             ),
+                                            !isProductAvaliable ?  const Text(
+                                              'Out of Stock!',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14.0,
+                                                color: Colors.red
+                                              ),
+                                            ) : Container(),
                                           ],
                                         ),
                                       ),

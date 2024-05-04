@@ -45,6 +45,7 @@ dependencies:
   flutter_map: ^6.1.0
   latlong2: ^0.9.1
   intl: ^0.19.0
+  roundcheckbox: ^2.0.5
 
 
 

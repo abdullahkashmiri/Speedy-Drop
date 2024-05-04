@@ -6,7 +6,6 @@ import 'package:latlong2/latlong.dart';
 import 'package:path/path.dart' as Path;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
-
 import '../../Constants/constants.dart';
 
 class Database_Service {
@@ -83,9 +82,8 @@ class Database_Service {
     }
   }
 
-  Future<bool> createSellerMode(String storeName, String storeDescription,
-      List<String> selectedDays, String openingHours,
-      String closingHours, LatLng storeLocation, String contactNumber,
+  Future<bool> createSellerMode(String storeName, String storeDescription, List<String> selectedDays,
+      String openingHours, String closingHours, LatLng storeLocation, String contactNumber,
       File storeImage) async {
     try {
       String ownerId = userId;
@@ -466,11 +464,10 @@ class Database_Service {
     }
   }
 
-  Future<bool> updateProductDetailsOfCart(
-      Map<int, Map<String, dynamic>> cartProducts,
-      Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges,
-      int totalCharges, int deliveryTime, String storeName,
-      String storeImageLink, String vendorId) async {
+  Future<bool> updateProductDetailsOfCart(Map<int, Map<String, dynamic>> cartProducts,
+      Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges, int totalCharges,
+      int deliveryTime, String storeName, String storeImageLink, String vendorId, LatLng customerLocation,
+      LatLng storeLocation) async {
     try {
       final CollectionReference cartCollection = accountsCollection
           .doc(userId)
@@ -495,13 +492,9 @@ class Database_Service {
       }
 
       bool isOrderCreated = await uploadDataInOrderOnCloud(
-          orderProducts,
-          deliveryCharges,
-          totalCharges,
-          deliveryTime,
-          storeName,
-          storeImageLink,
-          vendorId);
+          orderProducts, deliveryCharges, totalCharges, deliveryTime,
+          storeName, storeImageLink, vendorId, customerLocation, storeLocation);
+
       if (isOrderCreated) {
         return true;
       } else {
@@ -514,9 +507,9 @@ class Database_Service {
   }
 
   Future<bool> uploadDataInOrderOnCloud(
-      Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges,
-      int totalCharges, int deliveryTime, String storeName,
-      String storeImageLink, String vendorId) async {
+      Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges, int totalCharges,
+      int deliveryTime, String storeName, String storeImageLink, String vendorId,
+      LatLng customerLocation, LatLng storeLocation) async {
     try {
       // Reference to the user's cart collection
       final CollectionReference orderCollection = accountsCollection
@@ -535,11 +528,13 @@ class Database_Service {
         String vendorId = orderProducts[i]?['vendor-id'];
         int selectedQuantity = orderProducts[i]?['selected-quantity'];
         String category = orderProducts[i]?['category'];
-        if(await updateProductQuantity(vendorId, category, productId, selectedQuantity)==false){
+        if (await updateProductQuantity(
+            vendorId, category, productId, selectedQuantity) == false) {
           print("Unable to update quantity");
           return false;
         }
       }
+
       DateTime now = DateTime.now();
       String formattedDate = DateFormat('dd/MM/yyyy hh:mm a').format(now);
       // Combine all data into a single map
@@ -551,7 +546,15 @@ class Database_Service {
         'storeName': storeName,
         'storeImageLink': storeImageLink,
         'orderCreationTime': formattedDate,
-        'currentStage': 'placed'
+        'currentStage': 'placed',
+        'storeLocation': {
+          'latitude': storeLocation.latitude,
+          'longitude': storeLocation.longitude,
+        },
+        'customerLocation': {
+          'latitude': customerLocation.latitude,
+          'longitude': customerLocation.longitude,
+        },
       };
 
       // placed, delivering, delivered.
@@ -658,6 +661,39 @@ class Database_Service {
       // Return false if there's an error
       print("Error updating quantity: $error");
       return false;
+    }
+  }
+
+  Future<LatLng?> fetchUserProfileLocation() async {
+    try {
+      Map<String, dynamic>? userData = await getUserData();
+
+      if (userData != null && userData.containsKey('address')) {
+        double latitude = userData['address']['latitude'];
+        double longitude = userData['address']['longitude'];
+        return LatLng(latitude, longitude);
+      } else {
+        return null; // Return null if user data or address is missing
+      }
+    } catch (e) {
+      print('Error fetching user profile location: $e');
+      return null; // Return null if an error occurs
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUserData() async {
+    try {
+      DocumentSnapshot userSnapshot =
+      await FirebaseFirestore.instance.collection('Accounts').doc(userId).get();
+
+      if (userSnapshot.exists) {
+        return userSnapshot.data() as Map<String, dynamic>;
+      } else {
+        return null; // User document doesn't exist
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+      return null; // Return null if an error occurs
     }
   }
 
