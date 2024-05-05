@@ -55,6 +55,13 @@ class _JobSelectionState extends State<JobSelection> {
   late String rider;
   late double storeRadius;
   late double rideRadius;
+  late String customerAddress;
+  late String storeAddress;
+  int storeMaxLines = 1;
+  int deliverMaxLines = 1;
+  late List<dynamic> productDetails;
+  late String jobId;
+
 
   //Functions
   @override
@@ -89,6 +96,20 @@ class _JobSelectionState extends State<JobSelection> {
     }
   }
 
+  Future<String> getLocationAddress(double latitude, double longitude) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+      Placemark placemark = placemarks.first;
+
+      String address = placemark.name ?? '';
+      String city = placemark.locality ?? '';
+      String country = placemark.country ?? '';
+
+      return '$address, $city, $country';
+    } catch (e) {
+      return '';
+    }
+  }
 
   Future<void> initializeData() async {
     job = widget.job;
@@ -108,9 +129,13 @@ class _JobSelectionState extends State<JobSelection> {
     creationTime = job['creationTime'];
     storeImageLink = job['storeImageLink'];
     currentStage = job['currentStage'];
+    productDetails = job['productsName'];
     rider = job['rider'];
     storeRadius = double.parse(calculateRadius(latitude!, longitude!,storeLocation['latitude'] , storeLocation['longitude'] ).toStringAsFixed(1));
     rideRadius = double.parse(calculateRadius(customerLocation['latitude'] , customerLocation['longitude'], storeLocation['latitude'] , storeLocation['longitude'] ).toStringAsFixed(1));
+    customerAddress = await getLocationAddress(customerLocation['latitude'] , customerLocation['longitude']);
+    storeAddress = await getLocationAddress(storeLocation['latitude'] , storeLocation['longitude']);
+    jobId = job['jobId'];
 
     setState(() {
       isLoading = false;
@@ -165,24 +190,6 @@ class _JobSelectionState extends State<JobSelection> {
                   ),
                 ),
               ),
-
-
-              IconButton(onPressed: () async {
-                isLoading = true;
-                setState(() {
-
-                });
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) {
-                  return HomeScreenRider(previousScreen: previousScreen);
-                }));
-                isLoading = false;
-                setState(() {
-
-                });
-              },
-                  icon: const Icon(Icons.refresh)),
-
               GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -258,8 +265,9 @@ class _JobSelectionState extends State<JobSelection> {
 
 
         body: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+          margin: const EdgeInsets.only(top: 0, bottom: 10.0, left: 20.0, right: 20.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 decoration: BoxDecoration(
@@ -352,8 +360,360 @@ class _JobSelectionState extends State<JobSelection> {
                   ],
                 ),
               ),
-              const SizedBox(height: 4.0,),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text('Order Details',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25.0,
+                  color: Colors.black,
+                ),),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10.0),
+                  // Smooth edges
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(15.0),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.location_pin, color: _orangeColor),
+                        const SizedBox(width: 5.0),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              if(storeMaxLines == 1) {
+                                storeMaxLines = 2;
+                              } else {
+                                storeMaxLines = 1;
+                              }
+                              setState(() {
 
+                              });
+                            },
+                            child: RichText(
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: storeMaxLines,
+                              text: TextSpan(
+                                children: [
+                                  const TextSpan(
+                                    text: 'Store Location: ',
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: storeAddress,
+                                    style: TextStyle(
+                                        fontSize: 16.0,
+                                        color: _orangeColor,
+                                        fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 2.0,),
+                    Row(
+                      children: [
+                        Icon(Icons.house, color: _orangeColor,),
+                        const SizedBox(width: 5.0,),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              if(deliverMaxLines == 1) {
+                                deliverMaxLines = 2;
+                              } else {
+                                deliverMaxLines = 1;
+                              }
+                              setState(() {
+
+                              });
+                            },
+                            child: RichText(
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: deliverMaxLines,
+                              text: TextSpan(
+                                children: [
+                                  const TextSpan(
+                                    text: 'Delivery Location: ',
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: customerAddress,
+                                    style: TextStyle(
+                                        fontSize: 16.0,
+                                        color: _orangeColor,
+                                        fontWeight: FontWeight.bold
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2.0,),
+                    Row(
+                      children: [
+                        Icon(Icons.point_of_sale, color: _orangeColor,),
+                        const SizedBox(width: 5.0,),
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              const TextSpan(
+                                text: 'Delivery Charges: ',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              TextSpan(
+                                text: '$deliveryCharges',
+                                style: TextStyle(
+                                    fontSize: 16.0,
+                                    color: _orangeColor,
+                                    fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 5.0,),
+                        Icon(Icons.currency_rupee, color: _orangeColor,),
+                      ],
+                    ),
+                    const SizedBox(height: 2.0,),
+                    Row(
+                      children: [
+                        Icon(Icons.point_of_sale, color: _orangeColor,),
+                        const SizedBox(width: 5.0,),
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              const TextSpan(
+                                text: 'Total Charges: ',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              TextSpan(
+                                text: '$totalCharges',
+                                style: TextStyle(
+                                    fontSize: 16.0,
+                                    color: _orangeColor,
+                                    fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 5.0,),
+                        Icon(Icons.currency_rupee, color: _orangeColor,),
+                      ],
+                    ),
+                    const SizedBox(height: 2.0,),
+                    Row(
+                      children: [
+                        Icon(Icons.calendar_month, color: _orangeColor,),
+                        const SizedBox(width: 5.0,),
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              const TextSpan(
+                                text: 'Order: ',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              TextSpan(
+                                text: '$creationTime',
+                                style: TextStyle(
+                                    fontSize: 16.0,
+                                    color: _orangeColor,
+                                    fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2.0,),
+                    Row(
+                      children: [
+                        Icon(Icons.receipt, color: _orangeColor,),
+                        const SizedBox(width: 5.0,),
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              const TextSpan(
+                                text: 'Payment Mode: ',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'Cash On Delivery',
+                                style: TextStyle(
+                                    fontSize: 16.0,
+                                    color: _orangeColor,
+                                    fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 2.0,),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text('Products in Order!',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0,
+                    color: Colors.black,
+                  ),),
+              ),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10.0),
+                    // Smooth edges
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(10.0),
+
+                  child: ListView.builder(
+                    itemCount: productDetails.length,
+                    itemBuilder: (context, index) {
+                      Map<String, dynamic> product = productDetails[index];
+                      String productName = product['productName'];
+                      int selectedQuantity = product['selectedQuantity'];
+
+                      return Container(
+                        margin: const EdgeInsets.all(5.0),
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10.0),
+                          // Smooth edges
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: RichText(
+                          textAlign: TextAlign.justify,
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: ' ${index + 1}.   ',
+                                style: TextStyle(
+                                  color: _orangeColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16.0,
+                                ),
+                              ),
+                              TextSpan(
+                                text: productName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              TextSpan(
+                                text: '    Qty: $selectedQuantity',
+                                style: TextStyle(
+                                  color: _orangeColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+
+                ),
+              ),
+              const SizedBox(height: 10.0,),
+              ElevatedButton(
+                onPressed: () async {
+
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _orangeColor,
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.motorcycle_outlined,
+                      color: Colors.white,),
+                    SizedBox(width: 10.0),
+                    Text("Deliver This Order",
+                      style: TextStyle(color: Colors.white,
+                          fontSize: 16.0, fontWeight: FontWeight.bold),),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 5.0,),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _orangeColor,
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Choose Some Other Order",
+                      style: TextStyle(color: Colors.white,
+                          fontSize: 16.0, fontWeight: FontWeight.bold),),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

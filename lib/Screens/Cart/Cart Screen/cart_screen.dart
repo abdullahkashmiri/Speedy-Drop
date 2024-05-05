@@ -822,6 +822,12 @@ class _CartScreenState extends State<CartScreen> {
                               setState(() {
                                 _error = 'Unable to Place an Order!';
                               });
+                              // // Pop the screen after 3 seconds
+                              // await Future.delayed(const Duration(seconds: 3), () {
+                              //   Navigator.pop(context);
+                              //   Navigator.pop(context);
+                              // });
+
                             }
                           } else if (emptyCart) {
                             // delete products

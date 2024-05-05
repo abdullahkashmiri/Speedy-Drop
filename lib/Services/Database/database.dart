@@ -34,8 +34,7 @@ class Database_Service {
   // -------------------------------------------------------------------------------------------------
   // Functions
 
-  Future<bool> initializeUserDataOnCloud(String userId, String userName,
-      String email, String password,) async {
+  Future<bool> initializeUserDataOnCloud(String userId, String userName, String email, String password,) async {
     try {
       LatLng defaultLocation = LatLng(0.0, 0.0);
 
@@ -111,9 +110,8 @@ class Database_Service {
     }
   }
 
-  Future<bool> createSellerMode(String storeName, String storeDescription, List<String> selectedDays,
-      String openingHours, String closingHours, LatLng storeLocation, String contactNumber,
-      File storeImage) async {
+  Future<bool> createSellerMode(String storeName, String storeDescription, List<String> selectedDays, String openingHours, String closingHours, LatLng storeLocation,
+      String contactNumber, File storeImage) async {
     try {
       String ownerId = userId;
       int sales = 0;
@@ -158,8 +156,7 @@ class Database_Service {
     }
   }
 
-  Future<bool> createNewProduct(List<File> images, String productName,
-      String description, double price, int quantity, String category) async {
+  Future<bool> createNewProduct(List<File> images, String productName, String description, double price, int quantity, String category) async {
     try {
       String uniqueProductId = const Uuid().v4();
       List<String> imagesUrls = await uploadImagesOfProduct(
@@ -186,8 +183,7 @@ class Database_Service {
     }
   }
 
-  Future<List<String>> uploadImagesOfProduct(List<File> images,
-      String uniqueProductId) async {
+  Future<List<String>> uploadImagesOfProduct(List<File> images, String uniqueProductId) async {
     List<String> downloadUrls = [];
     try {
       if (images.isEmpty) {
@@ -292,8 +288,7 @@ class Database_Service {
     return downloadUrl;
   }
 
-  Future<bool> updateUserDataOnCloud(String userName, String phoneNumber,
-      LatLng markerLocation, String profileImage,) async {
+  Future<bool> updateUserDataOnCloud(String userName, String phoneNumber, LatLng markerLocation, String profileImage,) async {
     try {
       await accountsCollection.doc(userId).update({
         'user-name': userName,
@@ -408,8 +403,7 @@ class Database_Service {
     }
   }
 
-  Future<bool> uploadDataInCartOnCloud(String productId, String vendorId,
-      String category, int selectedQuantity) async {
+  Future<bool> uploadDataInCartOnCloud(String productId, String vendorId, String category, int selectedQuantity) async {
     try {
       // Reference to the user's cart collection
       final CollectionReference cartCollection = accountsCollection.doc(userId)
@@ -505,10 +499,8 @@ class Database_Service {
     }
   }
 
-  Future<bool> updateProductDetailsOfCart(Map<int, Map<String, dynamic>> cartProducts,
-      Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges, int totalCharges,
-      int deliveryTime, String storeName, String storeImageLink, String vendorId, LatLng customerLocation,
-      LatLng storeLocation) async {
+  Future<bool> updateProductDetailsOfCart(Map<int, Map<String, dynamic>> cartProducts, Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges, int totalCharges,
+      int deliveryTime, String storeName, String storeImageLink, String vendorId, LatLng customerLocation, LatLng storeLocation) async {
     try {
       final CollectionReference cartCollection = accountsCollection
           .doc(userId)
@@ -526,7 +518,6 @@ class Database_Service {
         // Check if the product ID is in the cartProducts map
         for (int i = 0; i < cartProducts.length; i++) {
           if (cartProducts[i]?['product-id'] == productId) {
-            print('found product');
             await cartCollection.doc(docId).delete();
           }
         }
@@ -547,10 +538,8 @@ class Database_Service {
     }
   }
 
-  Future<bool> uploadDataInOrderOnCloud(
-      Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges, int totalCharges,
-      int deliveryTime, String storeName, String storeImageLink, String vendorId,
-      LatLng customerLocation, LatLng storeLocation) async {
+  Future<bool> uploadDataInOrderOnCloud(Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges, int totalCharges, int deliveryTime, String storeName,
+      String storeImageLink, String vendorId, LatLng customerLocation, LatLng storeLocation) async {
     try {
       // Reference to the user's cart collection
       final CollectionReference orderCollection = accountsCollection
@@ -558,7 +547,6 @@ class Database_Service {
           .collection('Order');
 
       List<Map<String, dynamic>> confirmOrder = [];
-
 
       for (int i = 0; i < orderProducts.length; i++) {
         confirmOrder.add(orderProducts[i]!);
@@ -696,7 +684,7 @@ class Database_Service {
       int currentQuantity = productSnapshot.exists ? productSnapshot['quantity'] ?? 0 : 0;
       int newQuantity = currentQuantity - selectedQuantity;
 
-      if(newQuantity>0) {
+      if(newQuantity>=0) {
         // Update quantity in Firestore
         await storeCollection.doc(vendorId).collection(category).doc(
             uniqueProductId).set({
@@ -751,7 +739,12 @@ class Database_Service {
   Future<bool> makeDeliveryJobForOrder(LatLng storeLocation, LatLng customerLocation, List<Map<String, dynamic>> productsDetails, int deliveryCharges, int totalCharges,
       String storeName, int deliveryTime, String creationTime, String storeImageLink) async {
     try {
-      await jobCollection.add({
+
+
+      DocumentReference newJobRef = jobCollection.doc();
+      String jobId = newJobRef.id;
+      print(jobId);
+      await newJobRef.set({
         'storeLocation': {
           'latitude': storeLocation.latitude,
           'longitude': storeLocation.longitude,
@@ -768,7 +761,8 @@ class Database_Service {
         'creationTime': creationTime,
         'storeImageLink': storeImageLink,
         'currentStage': 'placed',
-        'rider' : ''
+        'rider' : '',
+        'jobId' : jobId
       });
 
       return true; // Job creation successful
@@ -796,12 +790,14 @@ class Database_Service {
           },
           'deliveryCharges': doc['deliveryCharges'],
           'totalCharges': doc['totalCharges'],
+          'productsName': doc['productsName'],
           'storeName': doc['storeName'],
           'deliveryTime': doc['deliveryTime'],
           'creationTime': doc['creationTime'],
           'storeImageLink': doc['storeImageLink'],
           'currentStage': doc['currentStage'],
           'rider': doc['rider'],
+          'jobId' : doc['jobId']
         };
 
         return jobData;
@@ -856,6 +852,7 @@ class Database_Service {
             'latitude': doc['customerLocation']['latitude'],
             'longitude': doc['customerLocation']['longitude'],
           },
+          'productsName': doc['productsName'],
           'deliveryCharges': doc['deliveryCharges'],
           'totalCharges': doc['totalCharges'],
           'storeName': doc['storeName'],
@@ -864,6 +861,7 @@ class Database_Service {
           'storeImageLink': doc['storeImageLink'],
           'currentStage': doc['currentStage'],
           'rider': doc['rider'],
+          'jobId' : doc['jobId']
         };
 
         return jobData;
@@ -876,8 +874,5 @@ class Database_Service {
       return [];
     }
   }
-
-
-
 
 }

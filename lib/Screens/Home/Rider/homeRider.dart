@@ -31,7 +31,6 @@ class _HomeScreenRiderState extends State<HomeScreenRider> {
   String _profileImage = 'assets/images/speedyLogov1.png';
   bool isRider = true;
   bool isLoading = true;
-  late List<Map<String, dynamic>> products;
   String _currentAddress = '';
 
 
