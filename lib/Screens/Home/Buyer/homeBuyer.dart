@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:speedydrop/Screens/Account/user_account.dart';
 import 'package:speedydrop/Screens/Authentication/Sign%20In/signin.dart';
-import 'package:speedydrop/Screens/Delivery/OnGoing%20Job/onGoingJob.dart';
 import 'package:speedydrop/Screens/Home/Seller/homeSeller.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Screens/Order/Orders%20Screen/ordersScreen.dart';
@@ -43,7 +42,6 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
   double longitude = 0.0;
   int popularStoreMinSales = 35;
   bool isDataLoaded = false;
-
 
   //Functions
   @override
@@ -94,9 +92,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
     });
   }
 
-
-  double calculateRadius(double currentLat, double currentLng, double targetLat,
-      double targetLng) {
+  double calculateRadius(double currentLat, double currentLng, double targetLat, double targetLng) {
     const double earthRadius = 6371.0; // Earth's radius in kilometers
 
     double dLat = degreesToRadians(targetLat - currentLat);
@@ -111,9 +107,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
     return distance;
   }
 
-
-  bool isWithinRadius(double currentLat, double currentLng, double targetLat,
-      double targetLng, double radiusInKm) {
+  bool isWithinRadius(double currentLat, double currentLng, double targetLat, double targetLng, double radiusInKm) {
     const double earthRadius = 6371.0; // Earth's radius in kilometers
 
     double dLat = degreesToRadians(targetLat - currentLat);
@@ -343,7 +337,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                 ) : GestureDetector(
                   onTap: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return const OnGoingJobScreen();
+                      return const UserAccount();
                     }));
                   },
                   child: const Icon(

@@ -11,7 +11,6 @@ import 'package:speedydrop/Services/Database/database.dart';
 import '../../../Services/Auth/auth.dart';
 import 'dart:developer' as dev;
 
-
 class UserAccount extends StatefulWidget {
   const UserAccount({Key? key}) : super(key: key);
 
@@ -26,7 +25,6 @@ class _UserAccountState extends State<UserAccount> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
-
   final Auth_Service _auth_service = Auth_Service();
   String _name = '';
   String _email = '';
@@ -37,7 +35,6 @@ class _UserAccountState extends State<UserAccount> {
   bool isLoading = true;
   bool imageUpdated = false;
   late int userBalance;
-
   LatLng _initialLocation = LatLng(0, 0); // Initial location at (0, 0)
   MapController _mapController = MapController();
   late LatLng _currentLocation;
@@ -48,9 +45,6 @@ class _UserAccountState extends State<UserAccount> {
   bool isRider = false;
   ScrollController _scrollController = ScrollController();
 
-
-
-
 // Functions
   @override
   void initState() {
@@ -58,10 +52,10 @@ class _UserAccountState extends State<UserAccount> {
     _loadUserData(); // Call a function to load user data
   }
 
-
   Future<void> _loadUserData() async {
     // Fetch user data from Firestore
-    Map<String, dynamic>? userData = await Database_Service(userId: Auth_Service().getUserId()).fetchAllUserData();
+    Map<String, dynamic>? userData = await Database_Service(
+        userId: Auth_Service().getUserId()).fetchAllUserData();
     // Initialize text fields with user data
     await initallizeTextFields(userData);
     // Set isLoading to false to indicate that data has been loaded
@@ -82,9 +76,7 @@ class _UserAccountState extends State<UserAccount> {
     }
   }
 
-
   Future<void> initallizeTextFields(Map<String, dynamic>? userData) async {
-
     String userIdFromFirestore = userData?['user-id'] ?? '';
     String userNameFromFirestore = userData?['user-name'] ?? '';
     String emailFromFirestore = userData?['email'] ?? '';
@@ -109,10 +101,10 @@ class _UserAccountState extends State<UserAccount> {
       await _getCurrentLocation();
     } else {
       await _getCurrentLocation();
-      await _initialPosition(LatLng(latitudeFromFirestore, longitudeFromFirestore));
+      await _initialPosition(
+          LatLng(latitudeFromFirestore, longitudeFromFirestore));
     }
   }
-
 
   Future<void> _initialPosition(LatLng? latLng) async {
     if (latLng != null) {
@@ -121,7 +113,9 @@ class _UserAccountState extends State<UserAccount> {
         latLng.latitude,
         latLng.longitude,
       );
-      String locationName = placemarks.isNotEmpty ? placemarks[0].name ?? '' : '';
+      String locationName = placemarks.isNotEmpty
+          ? placemarks[0].name ?? ''
+          : '';
       setState(() {
         _currentLocation = latLng;
         _initialLocation = latLng;
@@ -131,7 +125,6 @@ class _UserAccountState extends State<UserAccount> {
     }
   }
 
-
   void _handleTap(TapPosition? position, LatLng? latLng) async {
     if (latLng != null) {
       // Fetch address based on tapped coordinates
@@ -139,7 +132,9 @@ class _UserAccountState extends State<UserAccount> {
         latLng.latitude,
         latLng.longitude,
       );
-      String locationName = placemarks.isNotEmpty ? placemarks[0].name ?? '' : '';
+      String locationName = placemarks.isNotEmpty
+          ? placemarks[0].name ?? ''
+          : '';
       setState(() {
         _initialLocation = latLng;
         _markerLocation = latLng;
@@ -148,8 +143,6 @@ class _UserAccountState extends State<UserAccount> {
     }
   }
 
-  // Function to get current location
-  // Update the _getCurrentLocation method
   Future<void> _getCurrentLocation() async {
     Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
@@ -166,7 +159,6 @@ class _UserAccountState extends State<UserAccount> {
       _locationName = locationName;
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -192,8 +184,6 @@ class _UserAccountState extends State<UserAccount> {
                   ],
                 ),
               ),
-
-
             ],
           ),
           leading: PopupMenuButton(
@@ -222,7 +212,6 @@ class _UserAccountState extends State<UserAccount> {
                 Navigator.pop(context);
               }
             },
-
           ),
         ),
         body: SingleChildScrollView(
@@ -275,8 +264,6 @@ class _UserAccountState extends State<UserAccount> {
                   ),
                 ),
               ),
-
-
               Text(_error, style: const TextStyle(
                   color: Colors.red, fontWeight: FontWeight.bold),),
               const SizedBox(height: 5.0,),
@@ -433,11 +420,11 @@ class _UserAccountState extends State<UserAccount> {
                         ],
                       ),
                       if(isRider)
-                      Text("Rider Balance : $userBalance",
-                      style: const TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.bold,
-                      ),),
+                        Text("Rider Balance : $userBalance",
+                          style: const TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                          ),),
                       const SizedBox(height: 10.0,),
                       const Text(
                         'Tap to Update Your Location',
@@ -445,7 +432,8 @@ class _UserAccountState extends State<UserAccount> {
                             fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10.0),
-                      Text(_locationName,style: const TextStyle(color: Colors.black),),
+                      Text(_locationName,
+                        style: const TextStyle(color: Colors.black),),
                       const SizedBox(height: 10.0),
                       SizedBox(
                         height: 200,
@@ -496,7 +484,6 @@ class _UserAccountState extends State<UserAccount> {
                             setState(() {
                               _error = 'Username is Mandatory!';
                             });
-
                           } else {
                             String link = _profileImage;
                             if (imageUpdated == true) {
@@ -519,7 +506,6 @@ class _UserAccountState extends State<UserAccount> {
                                 return;
                               }
                             }
-
                             bool isAccountUpdated = await Database_Service(
                                 userId: userId).updateUserData(
                                 _name, _phoneNumber, _markerLocation, link);
@@ -529,12 +515,10 @@ class _UserAccountState extends State<UserAccount> {
                               setState(() {
                                 isLoading = false;
                               });
-
                             } else {
                               setState(() {
                                 _error = 'Unable to Update Account';
                                 isLoading = false;
-
                               });
                               _scrollController.animateTo(
                                 0.0,
@@ -544,7 +528,6 @@ class _UserAccountState extends State<UserAccount> {
                             }
                           }
                         },
-
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _orangeColor,
                           padding: const EdgeInsets.symmetric(
@@ -580,6 +563,4 @@ class _UserAccountState extends State<UserAccount> {
     _emailController.dispose();
     _phoneNumberController.dispose();
   }
-
-
 }

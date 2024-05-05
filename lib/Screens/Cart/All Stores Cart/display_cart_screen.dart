@@ -11,7 +11,6 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../Home/Buyer/homeBuyer.dart';
 import '../Cart Screen/cart_screen.dart';
 
-
 class DisplayCartScreen extends StatefulWidget {
   const DisplayCartScreen({
     Key? key,
@@ -21,7 +20,6 @@ class DisplayCartScreen extends StatefulWidget {
 }
 
 class _DisplayCartScreenState extends State<DisplayCartScreen> {
-
   //Variables
   Color _orangeColor = Colors.orange.shade800;
   final Auth_Service _auth_service = Auth_Service();
@@ -71,7 +69,6 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
     }
   }
 
-
   Map<int, Map<String, dynamic>> removeDuplicates() {
     Map<String, Map<String, dynamic>> uniqueProducts = {};
 
@@ -81,7 +78,9 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
 
       if (uniqueProducts.containsKey(productId)) {
         print("Contained id : $productId");
-        uniqueProducts[productId]!['selected-quantity'] = (uniqueProducts[productId]!['selected-quantity'] ?? 0) + selectedQuantity;
+        uniqueProducts[productId]!['selected-quantity'] =
+            (uniqueProducts[productId]!['selected-quantity'] ?? 0) +
+                selectedQuantity;
       } else {
         uniqueProducts[productId] = {
           'product-id': productId,
@@ -154,7 +153,7 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
 
 
     isChecked = List.filled(cartProductsSorted.length, false);
-    isDeleteButtonRed =  List.filled(cartProductsSorted.length, false);
+    isDeleteButtonRed = List.filled(cartProductsSorted.length, false);
 
     // Get current location
     await _getCurrentLocation();
@@ -163,7 +162,6 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
     setState(() {
       isLoading = false;
     });
-
   }
 
   void getVendorProducts(String selectedVendorId) {
@@ -180,14 +178,11 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
   Widget build(BuildContext context) {
     if (isLoading == false) {
       return Scaffold(
-
         appBar: AppBar(
           title: Row(
             children: [
               Icon(Icons.location_on_outlined, color: _orangeColor,),
               const SizedBox(width: 5.0,),
-
-
               Expanded(
                 child: _currentAddress.isNotEmpty
                     ? Text(
@@ -205,15 +200,11 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                   ),
                 ),
               ),
-
-
               IconButton(onPressed: () async {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DisplayCartScreen()));
+                Navigator.pushReplacement(context, MaterialPageRoute(
+                    builder: (context) => const DisplayCartScreen()));
               },
                   icon: const Icon(Icons.refresh)),
-
-
-
               GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -236,7 +227,6 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
             icon: const Icon(Icons.menu),
             itemBuilder: (BuildContext context) =>
             [
-
               PopupMenuItem(
                 value: 'buyer-mode',
                 child: Row(
@@ -248,7 +238,6 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                   ],
                 ),
               ),
-
               PopupMenuItem(
                 value: 'logout',
                 child: Row(
@@ -280,23 +269,17 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                 _orangeColor = Colors.orange.shade800;
               });
             },
-
           ),
         ),
-
         body: Container(
             decoration: BoxDecoration(
               color: Colors.grey.shade100,
               borderRadius: BorderRadius.circular(20),
-              // Rounded corners
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.2),
-                  // Shadow color
                   spreadRadius: 2,
-                  // Spread radius
                   blurRadius: 5,
-                  // Blur radius
                   offset: const Offset(0, 2), // Shadow position
                 ),
               ],
@@ -342,8 +325,6 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                           itemBuilder: (context, index) {
                             Map<String,
                                 dynamic>? product = cartProductsSorted[index];
-
-
                             String productId = product?['product-id'];
                             String vendorId = product?['vendor-id'];
                             String productName = product?['product-name'];
@@ -357,45 +338,46 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                             double val = selectedQuantity * price;
                             int calculatedPrice = val.toInt();
                             String category = product?['category'] ?? '';
-
-
-                            if(selectedQuantity > productQuantity) {
+                            if (selectedQuantity > productQuantity) {
                               selectedQuantity = productQuantity;
                             }
-                            cartProducts[index]?['selected-quantity'] = selectedQuantity;
-
+                            cartProducts[index]?['selected-quantity'] =
+                                selectedQuantity;
                             if (index == 0 ||
                                 (cartProductsSorted[index - 1]?['vendor-id'] ==
                                     vendorId)) {
                               return Column(
                                 children: [
                                   index == 0
-                                      ?   Center(child:     ElevatedButton(
-                                    onPressed: ()  {
+                                      ? Center(child: ElevatedButton(
+                                    onPressed: () {
                                       cartProductsVendor.clear();
                                       getVendorProducts(vendorId);
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                        return CartScreen(cart_products: cartProductsVendor, vendor_id: vendorId);
-                                      }));
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                            return CartScreen(
+                                                cart_products: cartProductsVendor,
+                                                vendor_id: vendorId);
+                                          }));
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: _orangeColor,
                                     ),
                                     child: const Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment
+                                          .center,
                                       children: [
                                         Icon(Icons.shopping_cart,
                                           color: Colors.white,),
                                         SizedBox(width: 10.0),
                                         Text("Continue with this Store",
                                           style: TextStyle(color: Colors.white,
-                                              fontSize: 16.0, fontWeight: FontWeight.bold),),
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.bold),),
                                       ],
                                     ),
                                   ),)
                                       : Container(),
-
-
                                   Container(
                                     margin: const EdgeInsets.symmetric(
                                         vertical: 5.0),
@@ -408,27 +390,28 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                                         BoxShadow(
                                           color: Colors.grey.withOpacity(
                                               0.2),
-                                          // Shadow color
                                           spreadRadius: 2,
-                                          // Spread radius
                                           blurRadius: 5,
-                                          // Blur radius
                                           offset: const Offset(
                                               0, 2), // Shadow position
                                         ),
                                       ],
                                     ),
-                                    child:      Container(
+                                    child: Container(
                                       padding: EdgeInsets.all(12.0),
                                       decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.grey.shade300),
-                                        borderRadius: BorderRadius.circular(12.0),
+                                        border: Border.all(
+                                            color: Colors.grey.shade300),
+                                        borderRadius: BorderRadius.circular(
+                                            12.0),
                                       ),
                                       child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment
+                                            .center,
                                         children: [
                                           ClipRRect(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius: BorderRadius.circular(
+                                                8),
                                             child: Image.network(
                                               productImages[0],
                                               fit: BoxFit.cover,
@@ -439,12 +422,14 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                                           const SizedBox(width: 12.0),
                                           Expanded(
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment
+                                                  .start,
                                               children: [
                                                 Text(
                                                   productName,
                                                   maxLines: 2,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow: TextOverflow
+                                                      .ellipsis,
                                                   style: const TextStyle(
                                                     fontSize: 16.0,
                                                     color: Colors.black,
@@ -454,7 +439,8 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                                                 const SizedBox(height: 5.0),
                                                 Text(
                                                   productDescription,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow: TextOverflow
+                                                      .ellipsis,
                                                   maxLines: 2,
                                                   style: const TextStyle(
                                                     color: Colors.grey,
@@ -465,7 +451,8 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                                             ),
                                           ),
                                           Column(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .spaceBetween,
                                             children: [
                                               Text(
                                                 'Qty: $selectedQuantity',
@@ -482,7 +469,8 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                                                     '$calculatedPrice',
                                                     style: TextStyle(
                                                       color: Colors.black,
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight: FontWeight
+                                                          .bold,
                                                     ),
                                                   ),
                                                   SizedBox(width: 4),
@@ -498,34 +486,37 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                                         ],
                                       ),
                                     ),
-
                                   )
-
                                 ],
                               );
                             } else {
                               return Column(
                                 children: [
-                                  Center(child:     ElevatedButton(
-                                    onPressed: ()  {
+                                  Center(child: ElevatedButton(
+                                    onPressed: () {
                                       cartProductsVendor.clear();
                                       getVendorProducts(vendorId);
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                        return CartScreen(cart_products: cartProductsVendor, vendor_id: vendorId);
-                                      }));
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                            return CartScreen(
+                                                cart_products: cartProductsVendor,
+                                                vendor_id: vendorId);
+                                          }));
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: _orangeColor,
                                     ),
                                     child: const Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment
+                                          .center,
                                       children: [
                                         Icon(Icons.shopping_cart,
                                           color: Colors.white,),
                                         SizedBox(width: 10.0),
                                         Text("Continue with this Store",
                                           style: TextStyle(color: Colors.white,
-                                              fontSize: 16.0, fontWeight: FontWeight.bold),),
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.bold),),
                                       ],
                                     ),
                                   ),),
@@ -551,17 +542,21 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                                         ),
                                       ],
                                     ),
-                                    child:      Container(
+                                    child: Container(
                                       padding: EdgeInsets.all(12.0),
                                       decoration: BoxDecoration(
-                                        border: Border.all(color: Colors.grey.shade300),
-                                        borderRadius: BorderRadius.circular(12.0),
+                                        border: Border.all(
+                                            color: Colors.grey.shade300),
+                                        borderRadius: BorderRadius.circular(
+                                            12.0),
                                       ),
                                       child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment
+                                            .center,
                                         children: [
                                           ClipRRect(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius: BorderRadius.circular(
+                                                8),
                                             child: Image.network(
                                               productImages[0],
                                               fit: BoxFit.cover,
@@ -572,12 +567,14 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                                           const SizedBox(width: 12.0),
                                           Expanded(
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment
+                                                  .start,
                                               children: [
                                                 Text(
                                                   productName,
                                                   maxLines: 2,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow: TextOverflow
+                                                      .ellipsis,
                                                   style: const TextStyle(
                                                     fontSize: 16.0,
                                                     color: Colors.black,
@@ -587,7 +584,8 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                                                 const SizedBox(height: 5.0),
                                                 Text(
                                                   productDescription,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow: TextOverflow
+                                                      .ellipsis,
                                                   maxLines: 2,
                                                   style: const TextStyle(
                                                     color: Colors.grey,
@@ -598,7 +596,8 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                                             ),
                                           ),
                                           Column(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .spaceBetween,
                                             children: [
                                               Text(
                                                 'Qty: $selectedQuantity',
@@ -615,7 +614,8 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                                                     '$calculatedPrice',
                                                     style: TextStyle(
                                                       color: Colors.black,
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight: FontWeight
+                                                          .bold,
                                                     ),
                                                   ),
                                                   SizedBox(width: 4),
@@ -631,17 +631,13 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
                                         ],
                                       ),
                                     ),
-
                                   )
                                 ],
                               );
                             }
                           }
-
                       ),
                     ),
-
-
                   ]
               ),
             )

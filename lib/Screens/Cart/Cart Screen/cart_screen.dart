@@ -16,7 +16,6 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../Home/Buyer/homeBuyer.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
 
-
 class CartScreen extends StatefulWidget {
   final Map<int, Map<String, dynamic>> cart_products;
   final String vendor_id;
@@ -32,7 +31,6 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-
   //Variables
   Color _orangeColor = Colors.orange.shade800;
   final Auth_Service _auth_service = Auth_Service();
@@ -48,7 +46,6 @@ class _CartScreenState extends State<CartScreen> {
   late List<bool> isChecked;
   late String vendorId;
   int subTotal = 0;
-
   String ?ownerId;
   String ?storeName;
   String ?storeDescription;
@@ -68,10 +65,9 @@ class _CartScreenState extends State<CartScreen> {
   String _error = '';
   bool emptyCart = false;
   bool isStoreOpen = false;
-
-
   bool isCurrentLocationSelected = true;
   bool isAccountLocationSelected = false;
+
   //Functions
   @override
   void initState() {
@@ -221,8 +217,7 @@ class _CartScreenState extends State<CartScreen> {
     });
   }
 
-  double calculateRadius(double currentLat, double currentLng, double targetLat,
-      double targetLng) {
+  double calculateRadius(double currentLat, double currentLng, double targetLat, double targetLng) {
     const double earthRadius = 6371.0; // Earth's radius in kilometers
 
     double dLat = degreesToRadians(targetLat - currentLat);
@@ -245,7 +240,6 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     if (isLoading == false) {
       return Scaffold(
-
         appBar: AppBar(
           title: Row(
             children: [
@@ -340,12 +334,10 @@ class _CartScreenState extends State<CartScreen> {
 
           ),
         ),
-
         body: Container(
             decoration: BoxDecoration(
               color: Colors.grey.shade100,
               borderRadius: BorderRadius.circular(20),
-              // Rounded corners
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.2),
@@ -799,13 +791,11 @@ class _CartScreenState extends State<CartScreen> {
                             } else {
                               customerLocation = customerProfileLocation;
                             }
-
                             bool isUpdated = await Database_Service(
                                 userId: _auth_service.getUserId())
                                 .updateProductDetailsOfCartToMakeAnOrder(
                                 cartProducts, orderProducts, deliveryCharges, totalCharges, estimatedDelivery,
                                 storeName!, storeImageLink!, vendorId, customerLocation!, storeLocation);
-
                             if (isUpdated) {
                               Navigator.pop(context);
                               Navigator.pushReplacement(
@@ -827,7 +817,6 @@ class _CartScreenState extends State<CartScreen> {
                                 Navigator.pop(context);
                                 Navigator.pop(context);
                               });
-
                             }
                           } else if (emptyCart) {
                             // delete products

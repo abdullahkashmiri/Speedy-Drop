@@ -17,7 +17,6 @@ class _SignInState extends State<SignIn> {
   //Variables
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
   final Auth_Service _auth_service = Auth_Service();
   String _email = '';
   String _password = '';
@@ -155,7 +154,6 @@ class _SignInState extends State<SignIn> {
                             });
                             _emailController.clear();
                             _passwordController.clear();
-
                             Navigator.pushReplacement(
                                 context, MaterialPageRoute(
                                 builder: (context) {
@@ -202,7 +200,6 @@ class _SignInState extends State<SignIn> {
                         });
                         _emailController.clear();
                         _passwordController.clear();
-
                       },
                       child: Text('Create an Account',
                         style: TextStyle(
@@ -216,7 +213,6 @@ class _SignInState extends State<SignIn> {
                       style: TextStyle(
                           color: Colors.orange.shade700,
                           fontSize: 15.5
-
                       ),)
                   ],
                 ),

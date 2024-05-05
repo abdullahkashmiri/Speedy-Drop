@@ -5,6 +5,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speedydrop/Screens/Delivery/Job%20Page/jobToSelect.dart';
+import 'package:speedydrop/Screens/Delivery/OnGoing%20Job/onGoingJob.dart';
 import 'package:speedydrop/Screens/Home/Seller/homeSeller.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
 import '../../../Services/Auth/auth.dart';
@@ -58,7 +59,6 @@ class _HomeScreenRiderState extends State<HomeScreenRider> {
     super.initState();
     previousScreen = widget.previousScreen;
     _getCurrentLocation();
-    isUserARider();
     initializeData();
 
   }
@@ -92,9 +92,17 @@ class _HomeScreenRiderState extends State<HomeScreenRider> {
   Future<void> isUserARider() async {
     isRider =
     await Database_Service(userId: _auth_service.getUserId()).isUserARider();
+    if(isRider) {
+      if(await isOnGoingJob()){
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return const OnGoingJobScreen();
+        }));
+      }
+    }
   }
 
   Future<void> initializeData() async {
+    await isUserARider();
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     avaliableJobs =

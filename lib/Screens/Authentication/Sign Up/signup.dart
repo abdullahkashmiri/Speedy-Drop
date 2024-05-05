@@ -14,11 +14,9 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   @override
   // Variables
-
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _confirmPasswordController = TextEditingController();
-
   final Auth_Service _auth_service = Auth_Service();
   String _email = '';
   String _password = '';
@@ -28,7 +26,6 @@ class _SignUpState extends State<SignUp> {
   bool _isSigningUp = false;
 
   //Functions
-
   @override
   Widget build(BuildContext context) {
     if (_isSigningUp == false) {
@@ -154,9 +151,9 @@ class _SignUpState extends State<SignUp> {
                     const SizedBox(height: 10.0,),
                     Text(_error,
                       style: const TextStyle(
-                        color: Colors.red,
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.bold
+                          color: Colors.red,
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold
                       ),
                     ),
                     const SizedBox(height: 10.0,),
@@ -183,9 +180,7 @@ class _SignUpState extends State<SignUp> {
                               _error = '';
                               _isSigningUp = true;
                             });
-
                             // signing up with email and password.
-
                             dynamic result = await _auth_service
                                 .signUpWithEmailAndPassword(_email, _password);
                             setState(() {
@@ -203,7 +198,6 @@ class _SignUpState extends State<SignUp> {
                               _emailController.clear();
                               _passwordController.clear();
                               _confirmPasswordController.clear();
-
                               Navigator.pop(context);
                             }
                           }
@@ -234,7 +228,6 @@ class _SignUpState extends State<SignUp> {
                         });
                         // Introduce 1 secs delay before moving to next screen
                         await Future.delayed(const Duration(milliseconds: 500));
-                        // back to login screen
                         Navigator.pop(context);
                         setState(() {
                           _isSigningUp = false;
@@ -243,7 +236,6 @@ class _SignUpState extends State<SignUp> {
                         _emailController.clear();
                         _passwordController.clear();
                         _confirmPasswordController.clear();
-
                       },
                       child: Text('Already have an account? Login',
                         style: TextStyle(

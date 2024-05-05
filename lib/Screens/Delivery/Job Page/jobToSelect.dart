@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:speedydrop/Screens/Delivery/OnGoing%20Job/onGoingJob.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Services/Database/database.dart';
 import '../../../Services/Auth/auth.dart';
@@ -15,13 +16,11 @@ class JobSelection extends StatefulWidget {
   final Map<String, dynamic> job;
 
   const JobSelection({Key? key,  required this.job});
-
   @override
   State<JobSelection> createState() => _JobSelectionState();
 }
 
 class _JobSelectionState extends State<JobSelection> {
-
   //Variables
   String previousScreen = '';
   Color _orangeColor = Colors.orange.shade800;
@@ -32,7 +31,6 @@ class _JobSelectionState extends State<JobSelection> {
   String _currentAddress = '';
   late Map<String, dynamic> job;
   String _error = '';
-
   String ?ownerId;
   String ?storeName;
   String ?storeDescription;
@@ -44,8 +42,7 @@ class _JobSelectionState extends State<JobSelection> {
   String ?contactNumber;
   String ?locationName = 'Fetching Your Current Location';
   String profilePhoto = '';
-  double areaRadius = 35; // in kilometers
-
+  double areaRadius = 30; // in kilometers
   late Map<String, dynamic> storeLocation;
   late Map<String, dynamic> customerLocation;
   late int deliveryCharges;
@@ -65,7 +62,6 @@ class _JobSelectionState extends State<JobSelection> {
   late String jobId;
   late String customerId;
   late String orderId;
-
 
   //Functions
   @override
@@ -102,7 +98,8 @@ class _JobSelectionState extends State<JobSelection> {
 
   Future<String> getLocationAddress(double latitude, double longitude) async {
     try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(latitude, longitude);
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+          latitude, longitude);
       Placemark placemark = placemarks.first;
 
       String address = placemark.name ?? '';
@@ -137,10 +134,17 @@ class _JobSelectionState extends State<JobSelection> {
     customerId = job['customerId'];
     orderId = job['orderId'];
     rider = job['rider'];
-    storeRadius = double.parse(calculateRadius(latitude!, longitude!,storeLocation['latitude'] , storeLocation['longitude'] ).toStringAsFixed(1));
-    rideRadius = double.parse(calculateRadius(customerLocation['latitude'] , customerLocation['longitude'], storeLocation['latitude'] , storeLocation['longitude'] ).toStringAsFixed(1));
-    customerAddress = await getLocationAddress(customerLocation['latitude'] , customerLocation['longitude']);
-    storeAddress = await getLocationAddress(storeLocation['latitude'] , storeLocation['longitude']);
+    storeRadius = double.parse(calculateRadius(
+        latitude!, longitude!, storeLocation['latitude'],
+        storeLocation['longitude']).toStringAsFixed(1));
+    rideRadius = double.parse(calculateRadius(
+        customerLocation['latitude'], customerLocation['longitude'],
+        storeLocation['latitude'], storeLocation['longitude']).toStringAsFixed(
+        1));
+    customerAddress = await getLocationAddress(
+        customerLocation['latitude'], customerLocation['longitude']);
+    storeAddress = await getLocationAddress(
+        storeLocation['latitude'], storeLocation['longitude']);
     jobId = job['jobId'];
     print('$jobId $orderId $customerId');
 
@@ -149,7 +153,8 @@ class _JobSelectionState extends State<JobSelection> {
     });
   }
 
-  double calculateRadius(double currentLat, double currentLng, double targetLat, double targetLng) {
+  double calculateRadius(double currentLat, double currentLng, double targetLat,
+      double targetLng) {
     const double earthRadius = 6371.0; // Earth's radius in kilometers
 
     double dLat = degreesToRadians(targetLat - currentLat);
@@ -161,20 +166,17 @@ class _JobSelectionState extends State<JobSelection> {
     double c = 2 * atan2(sqrt(a), sqrt(1 - a));
     double distance = earthRadius * c;
 
-    return distance ;
+    return distance;
   }
 
   double degreesToRadians(double degrees) {
     return degrees * pi / 180;
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     if (isLoading == false) {
       return Scaffold(
-
         appBar: AppBar(
           title: Row(
             children: [
@@ -269,10 +271,9 @@ class _JobSelectionState extends State<JobSelection> {
 
           ),
         ),
-
-
         body: Container(
-          margin: const EdgeInsets.only(top: 0, bottom: 10.0, left: 20.0, right: 20.0),
+          margin: const EdgeInsets.only(
+              top: 0, bottom: 10.0, left: 20.0, right: 20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -357,7 +358,6 @@ class _JobSelectionState extends State<JobSelection> {
                                   fontSize: 12.0,
                                   color: _orangeColor,
                                 ),
-
                               ),
                             ],
                           ),
@@ -374,11 +374,11 @@ class _JobSelectionState extends State<JobSelection> {
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text('Order Details',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25.0,
-                  color: Colors.black,
-                ),),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25.0,
+                    color: Colors.black,
+                  ),),
               ),
               Container(
                 decoration: BoxDecoration(
@@ -404,14 +404,12 @@ class _JobSelectionState extends State<JobSelection> {
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
-                              if(storeMaxLines == 1) {
+                              if (storeMaxLines == 1) {
                                 storeMaxLines = 2;
                               } else {
                                 storeMaxLines = 1;
                               }
-                              setState(() {
-
-                              });
+                              setState(() {});
                             },
                             child: RichText(
                               overflow: TextOverflow.ellipsis,
@@ -448,14 +446,12 @@ class _JobSelectionState extends State<JobSelection> {
                         Expanded(
                           child: GestureDetector(
                             onTap: () {
-                              if(deliverMaxLines == 1) {
+                              if (deliverMaxLines == 1) {
                                 deliverMaxLines = 2;
                               } else {
                                 deliverMaxLines = 1;
                               }
-                              setState(() {
-
-                              });
+                              setState(() {});
                             },
                             child: RichText(
                               overflow: TextOverflow.ellipsis,
@@ -636,14 +632,12 @@ class _JobSelectionState extends State<JobSelection> {
                       Map<String, dynamic> product = productDetails[index];
                       String productName = product['productName'];
                       int selectedQuantity = product['selectedQuantity'];
-
                       return Container(
                         margin: const EdgeInsets.all(5.0),
                         padding: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10.0),
-                          // Smooth edges
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey.withOpacity(0.5),
@@ -685,7 +679,6 @@ class _JobSelectionState extends State<JobSelection> {
                       );
                     },
                   ),
-
                 ),
               ),
               const SizedBox(height: 10.0,),
@@ -694,10 +687,14 @@ class _JobSelectionState extends State<JobSelection> {
                   setState(() {
                     isLoading = true;
                   });
-                  bool isJobAssigned = await Database_Service(userId: _auth_service.getUserId()).acceptRideJobAsRider(jobId, customerId, orderId);
-                  if(isJobAssigned) {
-                    Navigator.pop(context);
-
+                  bool isJobAssigned = await Database_Service(
+                      userId: _auth_service.getUserId()).acceptRideJobAsRider(
+                      jobId, customerId, orderId);
+                  if (isJobAssigned) {
+                    Navigator.pushReplacement(
+                        context, MaterialPageRoute(builder: (context) {
+                      return const OnGoingJobScreen();
+                    }));
                     setState(() {
                       isLoading = false;
                     });
