@@ -371,7 +371,7 @@ class _ProductScreenState extends State<ProductScreen> {
                               _error = '';
                               isLoading = true;
                             });
-                              await Database_Service(userId: _auth_service.getUserId()).uploadDataInCartOfAnotherProduct(productId, vendorId, category, selectedQuantity);
+                              await Database_Service(userId: _auth_service.getUserId()).uploadDataInCartOfAProduct(productId, vendorId, category, selectedQuantity);
                               Navigator.pop(context);
                               setState(() {
                               isLoading = true;

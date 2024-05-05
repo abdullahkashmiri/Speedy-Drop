@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:speedydrop/Screens/Account/user_account.dart';
 import 'package:speedydrop/Screens/Authentication/Sign%20In/signin.dart';
+import 'package:speedydrop/Screens/Delivery/OnGoing%20Job/onGoingJob.dart';
 import 'package:speedydrop/Screens/Home/Seller/homeSeller.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
 import 'package:speedydrop/Screens/Order/Orders%20Screen/ordersScreen.dart';
@@ -339,10 +340,17 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                     Icons.account_circle,
                     color: Colors.white,
                   ),
-                ) : const Icon(
-                  Icons.account_circle,
-                  color: Colors.grey,
-                  size: 30.0,
+                ) : GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return const OnGoingJobScreen();
+                    }));
+                  },
+                  child: const Icon(
+                    Icons.account_circle,
+                    color: Colors.grey,
+                    size: 30.0,
+                  ),
                 ),
                 label: '',
               ),
@@ -458,13 +466,11 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                             itemBuilder: (context, index) {
                               String userId = allStoreData.keys.elementAt(
                                   index);
-                              Map<String,
-                                  dynamic> userData = allStoreData[userId]!;
+                              Map<String, dynamic> userData = allStoreData[userId]!;
                               var ownerId = userData['owner-id'];
                               var storeName = userData['store-details']['store-name'];
                               var storeDesc = userData['store-details']['store-description'];
-                              var selectedDays = List<String>.from(
-                                  userData['store-details']['selectedDays']);
+                              var selectedDays = List<String>.from(userData['store-details']['selectedDays']);
                               var openHours = userData['store-details']['openingHours'];
                               var closeHours = userData['store-details']['closingHours'];
                               var lat = userData['store-details']['address']['latitude'];
@@ -475,29 +481,16 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
 
                               // Get the current date and time
                               DateTime now = DateTime.now();
-                              String dayAbbreviation = DateFormat.E().format(
-                                  now); // "E" gives the abbreviated day name
-                              String formattedDay = dayAbbreviation.substring(
-                                  0, 3); // Take the first three characters
-                              bool isDaySelected = selectedDays.contains(
-                                  formattedDay);
-                              String formattedTime = DateFormat('h:mm a')
-                                  .format(now);
-                              DateTime openTime = DateFormat('h:mm a').parse(
-                                  openHours);
-                              DateTime closeTime = DateFormat('h:mm a').parse(
-                                  closeHours);
-                              DateTime parsedTime = DateFormat('h:mm a').parse(
-                                  formattedTime);
-                              bool isOpen = ((parsedTime.isAfter(openTime) &&
-                                  parsedTime.isBefore(closeTime)) ||
-                                  (parsedTime.isAtSameMomentAs(openTime) ||
-                                      parsedTime.isAtSameMomentAs(closeTime)));
-                              bool isOpenTimeMidnight = openTime.hour == 0 &&
-                                  openTime.minute == 0 && openTime.second == 0;
-                              bool isCloseTimeMidnight = closeTime.hour == 0 &&
-                                  closeTime.minute == 0 &&
-                                  closeTime.second == 0;
+                              String dayAbbreviation = DateFormat.E().format(now); // "E" gives the abbreviated day name
+                              String formattedDay = dayAbbreviation.substring(0, 3); // Take the first three characters
+                              bool isDaySelected = selectedDays.contains(formattedDay);
+                              String formattedTime = DateFormat('h:mm a').format(now);
+                              DateTime openTime = DateFormat('h:mm a').parse(openHours);
+                              DateTime closeTime = DateFormat('h:mm a').parse(closeHours);
+                              DateTime parsedTime = DateFormat('h:mm a').parse(formattedTime);
+                              bool isOpen = ((parsedTime.isAfter(openTime) && parsedTime.isBefore(closeTime)) || (parsedTime.isAtSameMomentAs(openTime) || parsedTime.isAtSameMomentAs(closeTime)));
+                              bool isOpenTimeMidnight = openTime.hour == 0 && openTime.minute == 0 && openTime.second == 0;
+                              bool isCloseTimeMidnight = closeTime.hour == 0 && closeTime.minute == 0 && closeTime.second == 0;
                               if (isOpenTimeMidnight && isCloseTimeMidnight) {
                                 isOpen = true;
                               }

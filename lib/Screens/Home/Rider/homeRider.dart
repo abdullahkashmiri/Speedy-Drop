@@ -124,6 +124,14 @@ class _HomeScreenRiderState extends State<HomeScreenRider> {
     return degrees * pi / 180;
   }
 
+  Future<bool> isOnGoingJob() async {
+    late Map<String, dynamic> j;
+    j = await Database_Service(userId: _auth_service.getUserId()).fetchRiderJobData();
+    if(j.isEmpty) {
+      return false;
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {

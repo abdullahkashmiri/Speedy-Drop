@@ -27,7 +27,7 @@ class Database_Service {
   Future<bool> initializeUserDataOnCloud(String userId, String userName, String email, String password,) async {
     try {
       LatLng defaultLocation = LatLng(0.0, 0.0);
-
+      int bal = 0;
       await accountsCollection.doc(userId).set({
         'user-id': userId,
         'user-name': userName,
@@ -41,7 +41,8 @@ class Database_Service {
         'isBuyer': true,
         'isSeller': false,
         'isRider': false,
-        'profileImage': ''
+        'profileImage': '',
+        'riderBalance' : bal,
       });
       return true; // Return true if the operation succeeds
     } catch (e) {
@@ -393,7 +394,7 @@ class Database_Service {
     }
   }
 
-  Future<bool> uploadDataInCartOfAnotherProduct(String productId, String vendorId, String category, int selectedQuantity) async {
+  Future<bool> uploadDataInCartOfAProduct(String productId, String vendorId, String category, int selectedQuantity) async {
     try {
       // Reference to the user's cart collection
       final CollectionReference cartCollection = accountsCollection.doc(userId)
@@ -754,7 +755,8 @@ class Database_Service {
         'currentStage': 'placed',
         'rider' : '',
         'jobId' : jobId,
-        'deliveryStartTime' : ''
+        'deliveryStartTime' : '',
+        'deliveryEndTime' : ''
       });
 
       return true; // Job creation successful
@@ -792,7 +794,8 @@ class Database_Service {
           'currentStage': doc['currentStage'],
           'rider': doc['rider'],
           'jobId' : doc['jobId'],
-          'deliveryStartTime' : doc['deliveryStartTime']
+          'deliveryStartTime' : doc['deliveryStartTime'],
+          'deliveryEndTime' : doc['deliveryEndTime']
         };
 
         return jobData;
@@ -859,7 +862,8 @@ class Database_Service {
           'customerId' : doc['customerId'],
           'orderId': doc['orderId'],
           'rider': doc['rider'],
-          'jobId' : doc['jobId']
+          'jobId' : doc['jobId'],
+          'deliveryEndTime' : doc['deliveryEndTime']
         };
 
         return jobData;
@@ -904,6 +908,14 @@ class Database_Service {
           SetOptions(merge: true),
         );
 
+        DocumentSnapshot jobSnapshot = await jobCollection.doc(jobId).get();
+
+
+        final CollectionReference riderJobCollection = accountsCollection.doc(userId)
+            .collection('currentJob');
+        await riderJobCollection.doc().delete();
+        await riderJobCollection.add(jobSnapshot.data());
+
         // If the update operation succeeds, return true
         return true;
       } else {
@@ -913,6 +925,115 @@ class Database_Service {
     } catch (e) {
       // If an error occurs during the update operation, print the error and return false
       print('Error accepting ride job: $e');
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchRiderJobData() async {
+    try {
+      final CollectionReference riderJobCollection = accountsCollection
+          .doc(userId)
+          .collection('currentJob');
+
+      QuerySnapshot querySnapshot = await riderJobCollection.get();
+
+      Map<String, dynamic> riderJobDataList = {}; // Initialize as an empty map
+
+      querySnapshot.docs.forEach((doc) {
+        if (doc.exists) {
+          riderJobDataList.addAll(Map<String, dynamic>.from(doc.data() as Map<dynamic, dynamic>));
+        }
+      });
+
+      return riderJobDataList;
+    } catch (e) {
+      print('Error fetching rider job data: $e');
+      return {};
+    }
+  }
+
+  Future<bool> orderDeliveredCompleteRide(int totalCharges, String jobId, String orderId, String customerId) async {
+
+    try {
+      // Fetch job details
+      DocumentSnapshot jobSnapshot = await jobCollection.doc(jobId).get();
+
+      DateTime now = DateTime.now();
+      String formattedDate = DateFormat('dd/MM/yyyy hh:mm a').format(now);
+
+      // Check if currentStage is "placed" and rider is empty
+      if (jobSnapshot.exists &&
+          (jobSnapshot.data() as Map<String, dynamic>)['currentStage'] == 'delivering' &&
+          (jobSnapshot.data() as Map<String, dynamic>)['rider'] == userId) {
+        // Update job document
+        await jobCollection.doc(jobId).set(
+          {
+            'currentStage': 'delivered',
+            'deliveryEndTime' : formattedDate
+          },
+          SetOptions(merge: true), // Merge with existing data
+        );
+
+        await updateRiderRemainingBalance(totalCharges);
+
+        // Update order document
+        final CollectionReference orderCollection = accountsCollection.doc(customerId).collection('Order');
+        await orderCollection.doc(orderId).set(
+          {
+            'currentStage': 'delivered',
+          },
+          SetOptions(merge: true),
+        );
+
+        QuerySnapshot querySnapshot = await accountsCollection.doc(userId).collection('currentJob').get();
+
+        // Delete each document in the collection
+        for (DocumentSnapshot docSnapshot in querySnapshot.docs) {
+          await docSnapshot.reference.delete();
+        }
+        // If the update operation succeeds, return true
+        return true;
+      } else {
+        // If currentStage is not "placed" or rider is not empty, return false
+        return false;
+      }
+    } catch (e) {
+      // If an error occurs during the update operation, print the error and return false
+      print('Error accepting ride job: $e');
+      return false;
+    }
+  }
+
+  Future<bool> updateRiderRemainingBalance(int charges) async {
+    try {
+      DocumentReference accountDoc = accountsCollection.doc(userId);
+      DocumentSnapshot userDataSnapshot = await accountDoc.get();
+
+      // Check if the document exists before proceeding
+      if (userDataSnapshot.exists) {
+        // Retrieve the data from the snapshot
+        Map<String, dynamic> userData = userDataSnapshot.data() as Map<String, dynamic>;
+
+        // Retrieve the old balance
+        int oldBalance = userData['riderBalance'] ?? 0; // Default to 0 if 'riderBalance' doesn't exist
+
+        // Calculate the new balance
+        int newBalance = oldBalance + charges;
+
+        // Update the document with the new balance
+        await accountDoc.set({
+          'riderBalance': newBalance,
+        }, SetOptions(merge: true)); // Merge with existing data
+
+        return true;
+      } else {
+        // Document does not exist, handle accordingly
+        print('Document does not exist');
+        return false;
+      }
+    } catch (e) {
+      // Catch any errors that occur during the process
+      print('Error in updating the Rider Balance: $e');
       return false;
     }
   }

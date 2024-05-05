@@ -39,8 +39,6 @@ class _OpenStoreState extends State<OpenStore> {
   List<String> _selectedDays = [];
   String _selectedOpeningHour = '9:00 AM';
   String _selectedClosingHour = '6:00 PM';
-
-
   final List<String> _daysOfWeek = [
     'Mon',
     'Tue',
@@ -76,12 +74,8 @@ class _OpenStoreState extends State<OpenStore> {
     '10:00 PM',
     '11:00 PM',
   ];
-
   final String _profileImage = 'assets/images/speedyLogov1.png';
   bool isLoading = true;
-
-
-
   LatLng _initialLocation = LatLng(0, 0); // Initial location at (0, 0)
   MapController _mapController = MapController();
   late LatLng _currentLocation;

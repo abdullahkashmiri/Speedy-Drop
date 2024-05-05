@@ -36,6 +36,7 @@ class _UserAccountState extends State<UserAccount> {
   String _profileImage = 'assets/images/speedyLogov1.png';
   bool isLoading = true;
   bool imageUpdated = false;
+  late int userBalance;
 
   LatLng _initialLocation = LatLng(0, 0); // Initial location at (0, 0)
   MapController _mapController = MapController();
@@ -94,6 +95,7 @@ class _UserAccountState extends State<UserAccount> {
     bool isSellerFromFirestore = userData?['isSeller'] ?? false;
     bool isRiderFromFirestore = userData?['isRider'] ?? false;
     String profileImageFromFirestore = userData?['profileImage'] ?? '';
+    userBalance = userData?['riderBalance'] ?? 0;
 
     userId = userIdFromFirestore;
     _nameController.text = userNameFromFirestore;
@@ -430,6 +432,12 @@ class _UserAccountState extends State<UserAccount> {
                           ),
                         ],
                       ),
+                      if(isRider)
+                      Text("Rider Balance : $userBalance",
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                      ),),
                       const SizedBox(height: 10.0,),
                       const Text(
                         'Tap to Update Your Location',
