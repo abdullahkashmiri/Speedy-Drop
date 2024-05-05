@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:path/path.dart' as Path;
@@ -23,6 +24,9 @@ class Database_Service {
   // products
   final CollectionReference storeCollection = FirebaseFirestore.instance
       .collection('Store');
+
+  final CollectionReference jobCollection = FirebaseFirestore.instance
+      .collection('Job');
 
   // Firebase Storage
   FirebaseStorage storage = FirebaseStorage.instance;
@@ -82,6 +86,31 @@ class Database_Service {
     }
   }
 
+  Future<bool> isUserARider() async {
+    try {
+      DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+          .collection('Accounts').doc(userId).get();
+
+      if (documentSnapshot.exists) {
+        Map<String, dynamic> data = documentSnapshot.data() as Map<
+            String,
+            dynamic>;
+        dynamic isRider = data['isRider'];
+        if (isRider == true) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        // Document doesn't exist, user is not a seller
+        return false;
+      }
+    } catch (e) {
+      log('Error Occurred while checking if seller mode exists: $e');
+      return false;
+    }
+  }
+
   Future<bool> createSellerMode(String storeName, String storeDescription, List<String> selectedDays,
       String openingHours, String closingHours, LatLng storeLocation, String contactNumber,
       File storeImage) async {
@@ -113,6 +142,18 @@ class Database_Service {
       return true;
     } catch (e) {
       log('Error Occurred while creating seller mode : $e');
+      return false; // Return false if an error occurs
+    }
+  }
+
+  Future<bool> createRiderMode() async {
+    try {
+      await accountsCollection.doc(userId).update({
+        'isRider': true,
+      });
+      return true;
+    } catch (e) {
+      log('Error Occurred while creating rider mode : $e');
       return false; // Return false if an error occurs
     }
   }
@@ -523,11 +564,19 @@ class Database_Service {
         confirmOrder.add(orderProducts[i]!);
       }
 
+      List<Map<String, dynamic>> products = [];
+
       for (int i = 0; i < orderProducts.length; i++) {
         String productId = orderProducts[i]?['product-id'];
+        String productName = orderProducts[i]?['product-name'];
         String vendorId = orderProducts[i]?['vendor-id'];
         int selectedQuantity = orderProducts[i]?['selected-quantity'];
         String category = orderProducts[i]?['category'];
+        Map<String, dynamic> product = {
+          'productName' : productName,
+          'selectedQuantity' : selectedQuantity,
+        };
+        products.add(product);
         if (await updateProductQuantity(
             vendorId, category, productId, selectedQuantity) == false) {
           print("Unable to update quantity");
@@ -561,6 +610,8 @@ class Database_Service {
 
       // Add the map to the Firestore collection
       await orderCollection.add(orderData);
+      await makeDeliveryJobForOrder(storeLocation, customerLocation, products, deliveryCharges,
+          totalCharges, storeName, deliveryTime, formattedDate, storeImageLink);
       await incrementStoreSales(vendorId);
       // Data uploaded successfully
       return true;
@@ -696,5 +747,138 @@ class Database_Service {
       return null; // Return null if an error occurs
     }
   }
+
+  Future<bool> makeDeliveryJobForOrder(LatLng storeLocation, LatLng customerLocation, List<Map<String, dynamic>> productsDetails, int deliveryCharges, int totalCharges,
+      String storeName, int deliveryTime, String creationTime, String storeImageLink) async {
+    try {
+      await jobCollection.add({
+        'storeLocation': {
+          'latitude': storeLocation.latitude,
+          'longitude': storeLocation.longitude,
+        },
+        'customerLocation': {
+          'latitude': customerLocation.latitude,
+          'longitude': customerLocation.longitude,
+        },
+        'productsName': productsDetails,
+        'deliveryCharges': deliveryCharges,
+        'totalCharges': totalCharges,
+        'storeName': storeName,
+        'deliveryTime': deliveryTime,
+        'creationTime': creationTime,
+        'storeImageLink': storeImageLink,
+        'currentStage': 'placed',
+        'rider' : ''
+      });
+
+      return true; // Job creation successful
+    } catch (e) {
+      print('Error creating job: $e');
+      return false; // Job creation failed
+    }
+
+  }
+
+  Future<List<Map<String, dynamic>>> fetchJobs() async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('Job').get();
+
+
+      List<Map<String, dynamic>> jobs = snapshot.docs.map((doc) {
+        Map<String, dynamic> jobData = {
+          'storeLocation': {
+            'latitude': doc['storeLocation']['latitude'],
+            'longitude': doc['storeLocation']['longitude'],
+          },
+          'customerLocation': {
+            'latitude': doc['customerLocation']['latitude'],
+            'longitude': doc['customerLocation']['longitude'],
+          },
+          'deliveryCharges': doc['deliveryCharges'],
+          'totalCharges': doc['totalCharges'],
+          'storeName': doc['storeName'],
+          'deliveryTime': doc['deliveryTime'],
+          'creationTime': doc['creationTime'],
+          'storeImageLink': doc['storeImageLink'],
+          'currentStage': doc['currentStage'],
+          'rider': doc['rider'],
+        };
+
+        return jobData;
+      }).toList();
+
+      // Print the mapped jobs
+      jobs.forEach((job) {
+        print('Job: $job');
+      });
+
+      return jobs;
+    } catch (e) {
+      print('Error fetching jobs: $e');
+      return [];
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchNearbyJobs(Position riderPosition, double radius) async {
+    try {
+      // Calculate latitude range
+      double latRange = radius / 111.12;
+
+      // Calculate longitude range per degree of latitude
+      double lonRange = radius / 111.12;
+
+      // Calculate bounding box for adjacent locations
+      double latMin = riderPosition.latitude - latRange;
+      double latMax = riderPosition.latitude + latRange;
+      double lonMin = riderPosition.longitude - lonRange;
+      double lonMax = riderPosition.longitude + lonRange;
+
+
+      // Query Firestore for jobs within the bounding box
+      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('Job')
+          .where('storeLocation.latitude', isGreaterThanOrEqualTo: latMin)
+          .where('storeLocation.latitude', isLessThanOrEqualTo: latMax)
+          .get();
+
+      List<DocumentSnapshot> filteredDocs = snapshot.docs.where((doc) {
+        double longitude = doc['storeLocation']['longitude'];
+        String currentStage = doc['currentStage'];
+        return longitude >= lonMin && longitude <= lonMax && currentStage == 'placed';
+      }).toList();
+
+
+      List<Map<String, dynamic>> nearByJobs = filteredDocs.map((doc) {
+        Map<String, dynamic> jobData = {
+          'storeLocation': {
+            'latitude': doc['storeLocation']['latitude'],
+            'longitude': doc['storeLocation']['longitude'],
+          },
+          'customerLocation': {
+            'latitude': doc['customerLocation']['latitude'],
+            'longitude': doc['customerLocation']['longitude'],
+          },
+          'deliveryCharges': doc['deliveryCharges'],
+          'totalCharges': doc['totalCharges'],
+          'storeName': doc['storeName'],
+          'deliveryTime': doc['deliveryTime'],
+          'creationTime': doc['creationTime'],
+          'storeImageLink': doc['storeImageLink'],
+          'currentStage': doc['currentStage'],
+          'rider': doc['rider'],
+        };
+
+        return jobData;
+      }).toList();
+
+      return nearByJobs;
+    } catch (e) {
+      // Handle exceptions here, you can log the error or return an empty list
+      print('Error fetching nearby jobs: $e');
+      return [];
+    }
+  }
+
+
+
 
 }

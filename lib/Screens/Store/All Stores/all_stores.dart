@@ -34,6 +34,7 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
   double latitude = 0.0;
   double longitude = 0.0;
   int popularStoreMinSales = 35;
+  int deliveryTimePerKm = 8;
 
 
   //Functions
@@ -303,7 +304,7 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
                                     isOpen = true;
                                   }
                                   double storeRadius = double.parse(calculateRadius(latitude, longitude, lat, long).toStringAsFixed(1));
-                                  double val = storeRadius * 8;
+                                  double val = storeRadius * deliveryTimePerKm;
                                   int deliveryTime = val.toInt();
                                   if(deliveryTime < 30){
                                     deliveryTime = 30;

@@ -239,7 +239,7 @@ class _OpenStoreState extends State<OpenStore> {
               }  else if (value == 'rider-mode') {
                 Navigator.pushReplacement(
                     context, MaterialPageRoute(builder: (context) {
-                  return const HomeScreenRider();
+                  return const HomeScreenRider(previousScreen: 'openStore',);
                 }));
                 dev.log('rider-mode');
               } else if (value == 'logout') {

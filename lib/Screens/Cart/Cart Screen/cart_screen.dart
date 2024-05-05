@@ -575,7 +575,7 @@ class _CartScreenState extends State<CartScreen> {
                                 ],
                               ),
                               child: Container(
-                                padding: EdgeInsets.all(12.0),
+                                padding: const EdgeInsets.all(12.0),
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                       color: Colors.grey.shade300),
@@ -806,10 +806,6 @@ class _CartScreenState extends State<CartScreen> {
                                 cartProducts, orderProducts, deliveryCharges, totalCharges, estimatedDelivery,
                                 storeName!, storeImageLink!, vendorId, customerLocation!, storeLocation);
 
-                            print(customerLocation);
-                            print(storeLocation);
-
-                            print("is updated : $isUpdated");
                             if (isUpdated) {
                               Navigator.pop(context);
                               Navigator.pushReplacement(

@@ -163,7 +163,7 @@ class _NewProductScreenState extends State<NewProductScreen> {
               }  else if (value == 'rider-mode') {
                 Navigator.pushReplacement(
                     context, MaterialPageRoute(builder: (context) {
-                  return const HomeScreenRider();
+                  return const HomeScreenRider(previousScreen: 'newProduct',);
                 }));
                 dev.log('rider-mode');
               } else if (value == 'logout') {

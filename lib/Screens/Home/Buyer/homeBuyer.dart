@@ -232,7 +232,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
               } else if (value == 'rider-mode') {
                 Navigator.pushReplacement(
                     context, MaterialPageRoute(builder: (context) {
-                  return const HomeScreenRider();
+                  return const HomeScreenRider(previousScreen: 'homeBuyer',);
                 }));
                 dev.log('rider-mode');
               } else if (value == 'logout') {

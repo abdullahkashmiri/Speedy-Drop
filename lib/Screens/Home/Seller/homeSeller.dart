@@ -70,6 +70,8 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
       isLoading = false;
     });
   }
+
+
   Future<void> storeDataInitialized() async {
     try {
       // Fetch store data
@@ -104,6 +106,7 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
       print('Error occurred while initializing and fetching store data: $e');
     }
   }
+
   Future<void> productDataInitialized() async {
     products = await Database_Service(userId: _auth_service.getUserId())
         .fetchAllProductsOfSeller();
@@ -214,7 +217,7 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
               } else if (value == 'rider-mode') {
                 Navigator.pushReplacement(
                     context, MaterialPageRoute(builder: (context) {
-                  return const HomeScreenRider();
+                  return const HomeScreenRider(previousScreen: 'homeSeller',);
                 }));
                 dev.log('rider-mode');
               } else if (value == 'logout') {
@@ -545,7 +548,7 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
                         } else if (previousScreen == 'homeRider') {
                           Navigator.pushReplacement(context,
                               MaterialPageRoute(builder: (context) {
-                                return const HomeScreenRider();
+                                return const HomeScreenRider(previousScreen: 'homeSeller',);
                               }));
                         } else if (previousScreen == 'userAccount') {
                           Navigator.pushReplacement(context,

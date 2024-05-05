@@ -110,7 +110,7 @@ class _ManageStoreState extends State<ManageStore> {
             }  else if (value == 'rider-mode') {
               Navigator.pushReplacement(
                   context, MaterialPageRoute(builder: (context) {
-                return const HomeScreenRider();
+                return const HomeScreenRider(previousScreen: 'manageStore',);
               }));
               dev.log('rider-mode');
             } else if (value == 'logout') {
