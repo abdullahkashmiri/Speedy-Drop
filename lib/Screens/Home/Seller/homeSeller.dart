@@ -34,7 +34,6 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
   String deleteProductId = '';
   String deleteCategory = '';
 
-
   String ?ownerId;
   String ?storeName;
   String ?storeDescription;
@@ -49,14 +48,12 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
   String profilePhoto = '';
 
   //Functions
-
   @override
   void initState() {
     super.initState();
     previousScreen = widget.previousScreen;
     isUserASeller();
   }
-
 
   Future<void> isUserASeller() async {
     isSeller =
@@ -70,7 +67,6 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
       isLoading = false;
     });
   }
-
 
   Future<void> storeDataInitialized() async {
     try {
@@ -111,7 +107,6 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
     products = await Database_Service(userId: _auth_service.getUserId())
         .fetchAllProductsOfSeller();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +230,6 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
 
           ),
         ),
-
         body: isSeller ? Stack(
           children: [
             isDataLoaded ?
@@ -570,7 +564,6 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
             ),
           ),
         ),
-
       );
     } else {
       return const Loading_Screen();

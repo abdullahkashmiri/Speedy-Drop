@@ -13,7 +13,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-
 class AllStoreScreen extends StatefulWidget {
   const AllStoreScreen({super.key});
 
@@ -35,7 +34,6 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
   double longitude = 0.0;
   int popularStoreMinSales = 35;
   int deliveryTimePerKm = 8;
-
 
   //Functions
   @override
@@ -86,8 +84,7 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
     });
   }
 
-  double calculateRadius(double currentLat, double currentLng, double targetLat,
-      double targetLng) {
+  double calculateRadius(double currentLat, double currentLng, double targetLat, double targetLng) {
     const double earthRadius = 6371.0; // Earth's radius in kilometers
 
     double dLat = degreesToRadians(targetLat - currentLat);
@@ -109,14 +106,11 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       appBar: AppBar(
         title: Row(
           children: [
             Icon(Icons.location_on_outlined, color: _orangeColor,),
             const SizedBox(width: 5.0,),
-
-
             Expanded(
               child: _currentAddress.isNotEmpty
                   ? Text(
@@ -211,7 +205,6 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
 
         ),
       ),
-
       body: FutureBuilder(
           future: Database_Service(userId: _auth_service.getUserId())
               .fetchAllStoreData(),

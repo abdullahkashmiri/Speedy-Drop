@@ -71,7 +71,6 @@ class _ProductsInStoreState extends State<ProductsInStore> {
         setState(() {
           _currentAddress = address;
         });
-        print('loc: $_currentAddress');
         setState(() {
           isLoading = false;
         });
@@ -85,7 +84,6 @@ class _ProductsInStoreState extends State<ProductsInStore> {
       }
     }
   }
-
 
   Future<void> storeDataInitialized() async {
     try {
@@ -123,7 +121,6 @@ class _ProductsInStoreState extends State<ProductsInStore> {
       print('Error occurred while initializing and fetching store data: $e');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -273,32 +270,79 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                         ),
                         child: Column(
                           children: [
-                            Center(
-                              child: Text(
-                                storeName!,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18.0,
-                                  color: Colors.white,
+                            Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(
+                                    storeImageLink,
+                                    fit: BoxFit.cover,
+                                    width: 100,
+                                    height: 100,
+                                  ),
                                 ),
-                              ),
+                                const SizedBox(width: 20.0,),
+                                Column(
+                                  children: [
+                                    Text(
+                                      storeName!,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.0,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 5.0,),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(Icons.call, color: Colors.white,),
+                                        SizedBox(width: 5.0,),
+                                        Text('$contactNumber',
+                                          style: const TextStyle(color: Colors.white),),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 2.0,),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text('Est. $deliveryTime mins',
+                                          style: const TextStyle(color: Colors.white),),
+                                        SizedBox(width: 5.0,),
+Icon(Icons.motorcycle, color: Colors.white,),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 2.0,),
-                            Text('Contact Us : $contactNumber',
-                              style: const TextStyle(color: Colors.white),),
-                            const SizedBox(height: 2.0,),
-                            Text('Estimated Delivery : $deliveryTime mins',
-                              style: const TextStyle(color: Colors.white),)
                           ],
                         ),
                       ) : Container(),
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.all(8.0),
-                        child: Text('Store Products',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24.0,
-                          ),),
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Products',
+                                style: TextStyle(
+                                    color: _orangeColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 25.0
+                                ),
+                              ),
+                              const TextSpan(
+                                text: ' Available in Store',
+                                style: TextStyle(
+                                    fontSize: 20.0,
+                                    color: Colors.black
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
                       ),
                       Expanded(
                         child: ListView.builder(
@@ -307,7 +351,6 @@ class _ProductsInStoreState extends State<ProductsInStore> {
                             Map<String, dynamic> product = products[index];
 
                             bool isProductAvaliable = (product['quantity'] == 0 ? false : true);
-                            print(product['quantity']);
                             return GestureDetector(
                               onTap: () {
                                 if(isProductAvaliable) {

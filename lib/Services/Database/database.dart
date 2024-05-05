@@ -846,7 +846,6 @@ class Database_Service {
         return longitude >= lonMin && longitude <= lonMax && currentStage == 'placed';
       }).toList();
 
-
       List<Map<String, dynamic>> nearByJobs = filteredDocs.map((doc) {
         Map<String, dynamic> jobData = {
           'storeLocation': {
