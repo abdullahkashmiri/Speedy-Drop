@@ -438,7 +438,7 @@ class _HomeScreenSellerState extends State<HomeScreenSeller> {
                                   isLoading = true;
                                   isDataLoaded = false;
                                 });
-                                await Database_Service(userId: _auth_service.getUserId()).deleteProduct(deleteCategory, deleteProductId);
+                                await Database_Service(userId: _auth_service.getUserId()).deleteProductOfSeller(deleteCategory, deleteProductId);
 
                                 await productDataInitialized();
                                 setState(() {

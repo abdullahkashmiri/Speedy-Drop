@@ -60,7 +60,7 @@ class _UserAccountState extends State<UserAccount> {
 
   Future<void> _loadUserData() async {
     // Fetch user data from Firestore
-    Map<String, dynamic>? userData = await Database_Service(userId: Auth_Service().getUserId()).fetchUserDataFromCloud();
+    Map<String, dynamic>? userData = await Database_Service(userId: Auth_Service().getUserId()).fetchAllUserData();
     // Initialize text fields with user data
     await initallizeTextFields(userData);
     // Set isLoading to false to indicate that data has been loaded
@@ -497,7 +497,7 @@ class _UserAccountState extends State<UserAccount> {
                                 isLoading = true;
                               });
                               link = await Database_Service(userId: userId)
-                                  .uploadProfileImage(profileImage!);
+                                  .uploadProfilePhotoOfUser(profileImage!);
                               if (link == '') {
                                 setState(() {
                                   _error = 'Unable to upload Profile Photo';
@@ -513,7 +513,7 @@ class _UserAccountState extends State<UserAccount> {
                             }
 
                             bool isAccountUpdated = await Database_Service(
-                                userId: userId).updateUserDataOnCloud(
+                                userId: userId).updateUserData(
                                 _name, _phoneNumber, _markerLocation, link);
                             if (isAccountUpdated == true) {
                               dev.log('Account Updated Successfully');

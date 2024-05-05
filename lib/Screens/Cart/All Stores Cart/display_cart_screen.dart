@@ -128,7 +128,7 @@ class _DisplayCartScreenState extends State<DisplayCartScreen> {
   Future<void> initializeData() async {
     // Fetch cart products
     cartProducts = await Database_Service(userId: _auth_service.getUserId())
-        .fetchAllProductDetailsOfCart();
+        .fetchAllProductsOfCartAndTheirDetailsFromRespectiveStores();
 
     cartProducts = removeDuplicates();
     removeZeroQuantityItems();

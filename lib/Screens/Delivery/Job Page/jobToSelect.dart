@@ -3,6 +3,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:speedydrop/Screens/Loading/loading.dart';
+import 'package:speedydrop/Services/Database/database.dart';
 import '../../../Services/Auth/auth.dart';
 import 'dart:math';
 import 'dart:developer' as dev;
@@ -30,6 +31,7 @@ class _JobSelectionState extends State<JobSelection> {
   bool isLoading = true;
   String _currentAddress = '';
   late Map<String, dynamic> job;
+  String _error = '';
 
   String ?ownerId;
   String ?storeName;
@@ -61,6 +63,8 @@ class _JobSelectionState extends State<JobSelection> {
   int deliverMaxLines = 1;
   late List<dynamic> productDetails;
   late String jobId;
+  late String customerId;
+  late String orderId;
 
 
   //Functions
@@ -130,12 +134,15 @@ class _JobSelectionState extends State<JobSelection> {
     storeImageLink = job['storeImageLink'];
     currentStage = job['currentStage'];
     productDetails = job['productsName'];
+    customerId = job['customerId'];
+    orderId = job['orderId'];
     rider = job['rider'];
     storeRadius = double.parse(calculateRadius(latitude!, longitude!,storeLocation['latitude'] , storeLocation['longitude'] ).toStringAsFixed(1));
     rideRadius = double.parse(calculateRadius(customerLocation['latitude'] , customerLocation['longitude'], storeLocation['latitude'] , storeLocation['longitude'] ).toStringAsFixed(1));
     customerAddress = await getLocationAddress(customerLocation['latitude'] , customerLocation['longitude']);
     storeAddress = await getLocationAddress(storeLocation['latitude'] , storeLocation['longitude']);
     jobId = job['jobId'];
+    print('$jobId $orderId $customerId');
 
     setState(() {
       isLoading = false;
@@ -360,8 +367,12 @@ class _JobSelectionState extends State<JobSelection> {
                   ],
                 ),
               ),
+              Center(
+                child: Text(_error, style: const TextStyle(
+                    color: Colors.red, fontWeight: FontWeight.bold),),
+              ),
               const Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text('Order Details',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -680,7 +691,26 @@ class _JobSelectionState extends State<JobSelection> {
               const SizedBox(height: 10.0,),
               ElevatedButton(
                 onPressed: () async {
+                  setState(() {
+                    isLoading = true;
+                  });
+                  bool isJobAssigned = await Database_Service(userId: _auth_service.getUserId()).acceptRideJobAsRider(jobId, customerId, orderId);
+                  if(isJobAssigned) {
+                    Navigator.pop(context);
 
+                    setState(() {
+                      isLoading = false;
+                    });
+                  } else {
+                    setState(() {
+                      _error = 'Unable to Pick This Job!';
+                      isLoading = false;
+                    });
+                    // Pop the screen after 3 seconds
+                    await Future.delayed(const Duration(seconds: 3), () {
+                      Navigator.pop(context);
+                    });
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _orangeColor,

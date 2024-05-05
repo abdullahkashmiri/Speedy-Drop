@@ -802,7 +802,7 @@ class _CartScreenState extends State<CartScreen> {
 
                             bool isUpdated = await Database_Service(
                                 userId: _auth_service.getUserId())
-                                .updateProductDetailsOfCart(
+                                .updateProductDetailsOfCartToMakeAnOrder(
                                 cartProducts, orderProducts, deliveryCharges, totalCharges, estimatedDelivery,
                                 storeName!, storeImageLink!, vendorId, customerLocation!, storeLocation);
 
@@ -822,11 +822,11 @@ class _CartScreenState extends State<CartScreen> {
                               setState(() {
                                 _error = 'Unable to Place an Order!';
                               });
-                              // // Pop the screen after 3 seconds
-                              // await Future.delayed(const Duration(seconds: 3), () {
-                              //   Navigator.pop(context);
-                              //   Navigator.pop(context);
-                              // });
+                              // Pop the screen after 3 seconds
+                              await Future.delayed(const Duration(seconds: 3), () {
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              });
 
                             }
                           } else if (emptyCart) {

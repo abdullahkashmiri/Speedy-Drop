@@ -10,28 +10,18 @@ import 'package:uuid/uuid.dart';
 import '../../Constants/constants.dart';
 
 class Database_Service {
-
   final String userId;
-
   Database_Service({required this.userId});
-
-  // -------------------------------------------------------------------------------------------------
   // Collection Reference
   // accounts
-  final CollectionReference accountsCollection = FirebaseFirestore.instance
-      .collection('Accounts');
-
-  // products
-  final CollectionReference storeCollection = FirebaseFirestore.instance
-      .collection('Store');
-
-  final CollectionReference jobCollection = FirebaseFirestore.instance
-      .collection('Job');
-
-  // Firebase Storage
+  final CollectionReference accountsCollection = FirebaseFirestore.instance.collection('Accounts');
+  // Store for products
+  final CollectionReference storeCollection = FirebaseFirestore.instance.collection('Store');
+  // Job for delivery Jobs
+  final CollectionReference jobCollection = FirebaseFirestore.instance.collection('Job');
+  // Firebase Storage for images
   FirebaseStorage storage = FirebaseStorage.instance;
 
-  // -------------------------------------------------------------------------------------------------
   // Functions
 
   Future<bool> initializeUserDataOnCloud(String userId, String userName, String email, String password,) async {
@@ -244,7 +234,7 @@ class Database_Service {
     return allProducts;
   }
 
-  Future<Map<String, dynamic>?> fetchUserDataFromCloud() async {
+  Future<Map<String, dynamic>?> fetchAllUserData() async {
     try {
       print('Fetching user data from cloud');
       // Get the document snapshot from Firestore
@@ -268,7 +258,7 @@ class Database_Service {
     }
   }
 
-  Future<String> uploadProfileImage(File image) async {
+  Future<String> uploadProfilePhotoOfUser(File image) async {
     String downloadUrl = '';
     try {
       File imageFile = image;
@@ -288,7 +278,7 @@ class Database_Service {
     return downloadUrl;
   }
 
-  Future<bool> updateUserDataOnCloud(String userName, String phoneNumber, LatLng markerLocation, String profileImage,) async {
+  Future<bool> updateUserData(String userName, String phoneNumber, LatLng markerLocation, String profileImage,) async {
     try {
       await accountsCollection.doc(userId).update({
         'user-name': userName,
@@ -376,7 +366,7 @@ class Database_Service {
     }
   }
 
-  Future<Map<String, dynamic>> fetchAllStoreData() async {
+  Future<Map<String, dynamic>> fetchAllStoresData() async {
     try {
       QuerySnapshot<Object?> snapshot = await storeCollection.get();
 
@@ -403,7 +393,7 @@ class Database_Service {
     }
   }
 
-  Future<bool> uploadDataInCartOnCloud(String productId, String vendorId, String category, int selectedQuantity) async {
+  Future<bool> uploadDataInCartOfAnotherProduct(String productId, String vendorId, String category, int selectedQuantity) async {
     try {
       // Reference to the user's cart collection
       final CollectionReference cartCollection = accountsCollection.doc(userId)
@@ -429,7 +419,7 @@ class Database_Service {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchCartDataFromCloud() async {
+  Future<List<Map<String, dynamic>>> fetchCartData() async {
     try {
       // Reference to the user's cart collection
       final CollectionReference cartCollection = accountsCollection.doc(userId)
@@ -451,10 +441,10 @@ class Database_Service {
     }
   }
 
-  Future<Map<int, Map<String, dynamic>>> fetchAllProductDetailsOfCart() async {
+  Future<Map<int, Map<String, dynamic>>> fetchAllProductsOfCartAndTheirDetailsFromRespectiveStores() async {
     try {
       List<Map<String,
-          dynamic>> cartData = await fetchCartDataFromCloud();
+          dynamic>> cartData = await fetchCartData();
       Map<int, Map<String, dynamic>> cartProducts = {};
 
       int index = 0;
@@ -499,7 +489,7 @@ class Database_Service {
     }
   }
 
-  Future<bool> updateProductDetailsOfCart(Map<int, Map<String, dynamic>> cartProducts, Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges, int totalCharges,
+  Future<bool> updateProductDetailsOfCartToMakeAnOrder(Map<int, Map<String, dynamic>> cartProducts, Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges, int totalCharges,
       int deliveryTime, String storeName, String storeImageLink, String vendorId, LatLng customerLocation, LatLng storeLocation) async {
     try {
       final CollectionReference cartCollection = accountsCollection
@@ -523,7 +513,7 @@ class Database_Service {
         }
       }
 
-      bool isOrderCreated = await uploadDataInOrderOnCloud(
+      bool isOrderCreated = await uploadDataToCreateAnOrder(
           orderProducts, deliveryCharges, totalCharges, deliveryTime,
           storeName, storeImageLink, vendorId, customerLocation, storeLocation);
 
@@ -538,7 +528,7 @@ class Database_Service {
     }
   }
 
-  Future<bool> uploadDataInOrderOnCloud(Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges, int totalCharges, int deliveryTime, String storeName,
+  Future<bool> uploadDataToCreateAnOrder(Map<int, Map<String, dynamic>> orderProducts, int deliveryCharges, int totalCharges, int deliveryTime, String storeName,
       String storeImageLink, String vendorId, LatLng customerLocation, LatLng storeLocation) async {
     try {
       // Reference to the user's cart collection
@@ -565,7 +555,7 @@ class Database_Service {
           'selectedQuantity' : selectedQuantity,
         };
         products.add(product);
-        if (await updateProductQuantity(
+        if (await updateProductQuantityOnOrderCreation(
             vendorId, category, productId, selectedQuantity) == false) {
           print("Unable to update quantity");
           return false;
@@ -574,6 +564,8 @@ class Database_Service {
 
       DateTime now = DateTime.now();
       String formattedDate = DateFormat('dd/MM/yyyy hh:mm a').format(now);
+      DocumentReference orderDoc = orderCollection.doc();
+      String docId = orderDoc.id;
       // Combine all data into a single map
       Map<String, dynamic> orderData = {
         'orderProducts': confirmOrder,
@@ -597,10 +589,10 @@ class Database_Service {
       // placed, delivering, delivered.
 
       // Add the map to the Firestore collection
-      await orderCollection.add(orderData);
+      await orderCollection.doc(docId).set(orderData);
       await makeDeliveryJobForOrder(storeLocation, customerLocation, products, deliveryCharges,
-          totalCharges, storeName, deliveryTime, formattedDate, storeImageLink);
-      await incrementStoreSales(vendorId);
+          totalCharges, storeName, deliveryTime, formattedDate, storeImageLink, docId);
+      await incrementStoreSalesOnOrderCreation(vendorId);
       // Data uploaded successfully
       return true;
     } catch (error) {
@@ -610,7 +602,7 @@ class Database_Service {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchOrdersFromCloud() async {
+  Future<List<Map<String, dynamic>>> fetchAllOrdersOfUser() async {
     try {
       // Reference to the user's Order collection
       final CollectionReference orderCollection = accountsCollection
@@ -636,7 +628,7 @@ class Database_Service {
     }
   }
 
-  Future<void> deleteProduct(String category, String uniqueProductId) async {
+  Future<void> deleteProductOfSeller(String category, String uniqueProductId) async {
     try {
       await storeCollection
           .doc(userId)
@@ -649,7 +641,7 @@ class Database_Service {
     }
   }
 
-  Future<void> incrementStoreSales(String vendorUserId) async {
+  Future<void> incrementStoreSalesOnOrderCreation(String vendorUserId) async {
     try {
       // Fetch the document snapshot
       DocumentSnapshot<Map<String, dynamic>> snapshot = await storeCollection
@@ -677,7 +669,7 @@ class Database_Service {
     }
   }
 
-  Future<bool> updateProductQuantity(String vendorId, String category, String uniqueProductId, int selectedQuantity) async {
+  Future<bool> updateProductQuantityOnOrderCreation(String vendorId, String category, String uniqueProductId, int selectedQuantity) async {
     try {
       // Fetch current quantity of the product
       DocumentSnapshot productSnapshot = await storeCollection.doc(vendorId).collection(category).doc(uniqueProductId).get();
@@ -737,14 +729,13 @@ class Database_Service {
   }
 
   Future<bool> makeDeliveryJobForOrder(LatLng storeLocation, LatLng customerLocation, List<Map<String, dynamic>> productsDetails, int deliveryCharges, int totalCharges,
-      String storeName, int deliveryTime, String creationTime, String storeImageLink) async {
+      String storeName, int deliveryTime, String creationTime, String storeImageLink, String orderId) async {
     try {
-
-
       DocumentReference newJobRef = jobCollection.doc();
       String jobId = newJobRef.id;
-      print(jobId);
       await newJobRef.set({
+        'customerId' : userId,
+        'orderId' : orderId,
         'storeLocation': {
           'latitude': storeLocation.latitude,
           'longitude': storeLocation.longitude,
@@ -762,7 +753,8 @@ class Database_Service {
         'storeImageLink': storeImageLink,
         'currentStage': 'placed',
         'rider' : '',
-        'jobId' : jobId
+        'jobId' : jobId,
+        'deliveryStartTime' : ''
       });
 
       return true; // Job creation successful
@@ -773,7 +765,7 @@ class Database_Service {
 
   }
 
-  Future<List<Map<String, dynamic>>> fetchJobs() async {
+  Future<List<Map<String, dynamic>>> fetchAllJobs() async {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('Job').get();
 
@@ -793,11 +785,14 @@ class Database_Service {
           'productsName': doc['productsName'],
           'storeName': doc['storeName'],
           'deliveryTime': doc['deliveryTime'],
+          'customerId': doc['customerId'],
+          'orderId':doc['orderId'],
           'creationTime': doc['creationTime'],
           'storeImageLink': doc['storeImageLink'],
           'currentStage': doc['currentStage'],
           'rider': doc['rider'],
-          'jobId' : doc['jobId']
+          'jobId' : doc['jobId'],
+          'deliveryStartTime' : doc['deliveryStartTime']
         };
 
         return jobData;
@@ -815,7 +810,7 @@ class Database_Service {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchNearbyJobs(Position riderPosition, double radius) async {
+  Future<List<Map<String, dynamic>>> fetchNearbyAvailableJobs(Position riderPosition, double radius) async {
     try {
       // Calculate latitude range
       double latRange = radius / 111.12;
@@ -855,11 +850,14 @@ class Database_Service {
           'productsName': doc['productsName'],
           'deliveryCharges': doc['deliveryCharges'],
           'totalCharges': doc['totalCharges'],
+          'deliveryStartTime' : doc['deliveryStartTime'],
           'storeName': doc['storeName'],
           'deliveryTime': doc['deliveryTime'],
           'creationTime': doc['creationTime'],
           'storeImageLink': doc['storeImageLink'],
           'currentStage': doc['currentStage'],
+          'customerId' : doc['customerId'],
+          'orderId': doc['orderId'],
           'rider': doc['rider'],
           'jobId' : doc['jobId']
         };
@@ -872,6 +870,50 @@ class Database_Service {
       // Handle exceptions here, you can log the error or return an empty list
       print('Error fetching nearby jobs: $e');
       return [];
+    }
+  }
+
+  Future<bool> acceptRideJobAsRider(String jobId, String customerId, String orderId) async {
+    try {
+      // Fetch job details
+      DocumentSnapshot jobSnapshot = await jobCollection.doc(jobId).get();
+
+      DateTime now = DateTime.now();
+      String formattedDate = DateFormat('dd/MM/yyyy hh:mm a').format(now);
+
+      // Check if currentStage is "placed" and rider is empty
+      if (jobSnapshot.exists &&
+          (jobSnapshot.data() as Map<String, dynamic>)['currentStage'] == 'placed' &&
+          (jobSnapshot.data() as Map<String, dynamic>)['rider'] == '') {
+        // Update job document
+        await jobCollection.doc(jobId).set(
+          {
+            'currentStage': 'delivering',
+            'rider': userId,
+            'deliveryStartTime' : formattedDate
+          },
+          SetOptions(merge: true), // Merge with existing data
+        );
+
+        // Update order document
+        final CollectionReference orderCollection = accountsCollection.doc(customerId).collection('Order');
+        await orderCollection.doc(orderId).set(
+          {
+            'currentStage': 'delivering',
+          },
+          SetOptions(merge: true),
+        );
+
+        // If the update operation succeeds, return true
+        return true;
+      } else {
+        // If currentStage is not "placed" or rider is not empty, return false
+        return false;
+      }
+    } catch (e) {
+      // If an error occurs during the update operation, print the error and return false
+      print('Error accepting ride job: $e');
+      return false;
     }
   }
 

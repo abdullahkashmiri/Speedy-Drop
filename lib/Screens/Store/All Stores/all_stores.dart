@@ -75,7 +75,7 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
 
   Future<void> initializedData() async {
     Map<String, dynamic>? userData = await Database_Service(
-        userId: _auth_service.getUserId()).fetchUserDataFromCloud();
+        userId: _auth_service.getUserId()).fetchAllUserData();
 
     userId = userData?['user-id'] ?? '';
     profilePhoto = userData?['profileImage'] ?? '';
@@ -207,7 +207,7 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
       ),
       body: FutureBuilder(
           future: Database_Service(userId: _auth_service.getUserId())
-              .fetchAllStoreData(),
+              .fetchAllStoresData(),
           builder: (context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Loading_Screen();

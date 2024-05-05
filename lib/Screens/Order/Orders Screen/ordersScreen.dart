@@ -72,7 +72,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Future<void> initializeData() async {
     // Fetch
     _getCurrentLocation();
-    orders = await Database_Service(userId: _auth_service.getUserId()).fetchOrdersFromCloud();
+    orders = await Database_Service(userId: _auth_service.getUserId()).fetchAllOrdersOfUser();
 
     setState(() {
       isLoading = false;

@@ -84,7 +84,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
 
   Future<void> initializedData() async {
     Map<String, dynamic>? userData = await Database_Service(
-        userId: _auth_service.getUserId()).fetchUserDataFromCloud();
+        userId: _auth_service.getUserId()).fetchAllUserData();
     userId = userData?['user-id'] ?? '';
     _userName = userData?['user-name'] ?? '';
     profilePhoto = userData?['profileImage'] ?? '';
@@ -352,7 +352,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
 
         body: FutureBuilder(
           future: Database_Service(userId: _auth_service.getUserId())
-              .fetchAllStoreData(),
+              .fetchAllStoresData(),
           builder: (context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Loading_Screen();

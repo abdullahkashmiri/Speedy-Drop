@@ -98,7 +98,7 @@ class _HomeScreenRiderState extends State<HomeScreenRider> {
     Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     avaliableJobs =
-    await Database_Service(userId: _auth_service.getUserId()).fetchNearbyJobs(
+    await Database_Service(userId: _auth_service.getUserId()).fetchNearbyAvailableJobs(
         position, areaRadius);
     setState(() {
       isLoading = false;
