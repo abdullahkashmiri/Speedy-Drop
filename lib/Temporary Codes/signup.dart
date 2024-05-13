@@ -30,9 +30,9 @@ class _SignupPageState extends State<SignupPage> {
     String email = _emailController.text;
     String password = _passwordController.text;
 
-    // Here you can implement your signup logic, like calling an API to register the user
+    // signup logic
 
-    // For demonstration purposes, let's just print the user information
+    // print the user information
     print('Username: $username');
     print('Email: $email');
     print('Password: $password');
@@ -57,7 +57,7 @@ class _SignupPageState extends State<SignupPage> {
                 labelText: 'Username',
               ),
             ),
-            SizedBox(height: 20.0),
+            SizedBox(height: 40.0),
             TextField(
               controller: _emailController,
               decoration: InputDecoration(
@@ -73,12 +73,12 @@ class _SignupPageState extends State<SignupPage> {
               ),
               obscureText: true,
             ),
-            SizedBox(height: 20.0),
+            SizedBox(height: 30.0),
             RaisedButton(
               onPressed: _signup,
               child: Text('Signup'),
-              color: Colors.blue,
-              textColor: Colors.white,
+              color: Colors.white,
+              textColor: Colors.yello,
             ),
           ],
         ),
