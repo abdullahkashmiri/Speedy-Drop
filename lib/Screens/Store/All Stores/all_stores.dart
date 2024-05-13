@@ -170,6 +170,7 @@ class _AllStoreScreenState extends State<AllStoreScreen> {
                       style: TextStyle(fontWeight: FontWeight.bold)),
                 ],
               ),
+
             ),
 
             PopupMenuItem(
