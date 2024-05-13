@@ -62,6 +62,7 @@ class _HomeScreenRiderState extends State<HomeScreenRider> {
     initializeData();
 
   }
+  
 
   Future<void> _getCurrentLocation() async {
     // Check if the location permission is granted
@@ -88,6 +89,7 @@ class _HomeScreenRiderState extends State<HomeScreenRider> {
       }
     }
   }
+  
 
   Future<void> isUserARider() async {
     isRider =
@@ -101,6 +103,7 @@ class _HomeScreenRiderState extends State<HomeScreenRider> {
     }
   }
 
+
   Future<void> initializeData() async {
     await isUserARider();
     Position position = await Geolocator.getCurrentPosition(
@@ -112,6 +115,7 @@ class _HomeScreenRiderState extends State<HomeScreenRider> {
       isLoading = false;
     });
   }
+
 
   double calculateRadius(double currentLat, double currentLng, double targetLat, double targetLng) {
     const double earthRadius = 6371.0; // Earth's radius in kilometers
@@ -127,6 +131,7 @@ class _HomeScreenRiderState extends State<HomeScreenRider> {
 
     return distance ;
   }
+
 
   double degreesToRadians(double degrees) {
     return degrees * pi / 180;
