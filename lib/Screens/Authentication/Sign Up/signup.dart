@@ -249,7 +249,8 @@ class _SignUpState extends State<SignUp> {
                     Text('Speedy delivery, satisfaction assured!',
                       style: TextStyle(
                         color: Colors.orange.shade700,
-                        fontSize: 15.5,
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.bold
                       ),
                     ),
                   ],

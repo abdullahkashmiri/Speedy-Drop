@@ -212,7 +212,8 @@ class _SignInState extends State<SignIn> {
                     Text('Welcome to Speedy Drop',
                       style: TextStyle(
                           color: Colors.orange.shade700,
-                          fontSize: 15.5
+                          fontSize: 15.5,
+                        fontWeight: FontWeight.bold
                       ),)
                   ],
                 ),

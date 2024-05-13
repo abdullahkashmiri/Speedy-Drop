@@ -132,6 +132,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
     if (isLoading == false) {
       return Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.grey.shade100,
           title: Row(
             children: [
               Icon(Icons.location_on_outlined, color: _orangeColor,),
@@ -180,10 +181,14 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
             ],
           ),
           leading: PopupMenuButton(
+            color: Colors.white,
+            surfaceTintColor: Colors.white
+            ,
             icon: const Icon(Icons.menu),
             itemBuilder: (BuildContext context) =>
             [
               PopupMenuItem(
+
                 value: 'seller-mode',
                 child: Row(
                   children: [
@@ -350,7 +355,7 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
               ),
             ]
         ),
-
+        backgroundColor: Colors.grey.shade100,
 
         body: FutureBuilder(
           future: Database_Service(userId: _auth_service.getUserId())
@@ -371,40 +376,19 @@ class _HomeScreenBuyerState extends State<HomeScreenBuyer> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Welcome Back,'),
+                        const SizedBox(height: 10.0,),
+
+                        const Text('Welcome Back,',style: TextStyle(
+                          fontSize: 15.0
+                        ),),
+                        const SizedBox(height: 5.0,),
+
                         Text(_userName,
                           style: TextStyle(
                               color: _orangeColor,
                               fontSize: 18,
                               fontWeight: FontWeight.bold
                           ),),
-                        const SizedBox(height: 10.0,),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                decoration: InputDecoration(
-                                    hintText: 'Search for shops',
-                                    prefixIcon: const Icon(Icons.search),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 12.0, horizontal: 16.0),
-                                    filled: true,
-                                    fillColor: Colors.white
-                                ),
-                                onChanged: (value) {
-                                  // Implement search functionality here
-                                  print('Search query: $value');
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 8.0),
-                            // Add spacing between search box and settings button
-                            SettingsButton(),
-                          ],
-                        ),
                         const SizedBox(height: 10.0,),
                         Row(
                           children: [
