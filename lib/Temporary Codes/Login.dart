@@ -8,7 +8,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Login Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.pink,
       ),
       home: LoginPage(),
     );
@@ -83,12 +83,12 @@ class _LoginPageState extends State<LoginPage> {
               ),
               obscureText: true,
             ),
-            SizedBox(height: 20.0),
+            SizedBox(height: 25.0),
             RaisedButton(
               onPressed: _login,
               child: Text('Login'),
               color: Colors.blue,
-              textColor: Colors.white,
+              textColor: Colors.yello,
             ),
           ],
         ),
