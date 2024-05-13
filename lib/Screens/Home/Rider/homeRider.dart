@@ -62,7 +62,46 @@ class _HomeScreenRiderState extends State<HomeScreenRider> {
     initializeData();
 
   }
+  
 
+  Future<void> _getCurrentLocation() async {
+    // Check if the location permission is granted
+    var permissionStatus = await Permission.location.status;
+    if (permissionStatus.isGranted) {
+      try {
+        Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
+        latitude = position.latitude;
+        longitude = position.longitude;
+        List<Placemark> placemarks =
+        await placemarkFromCoordinates(position.latitude, position.longitude);
+        String address = placemarks.first.name ?? '';
+        setState(() {
+          _currentAddress = address;
+        });
+      } catch (e) {
+        print("Error: $e");
+      }
+    } else {
+      // If permission is not granted, request it
+      if (permissionStatus.isDenied || permissionStatus.isRestricted) {
+        await Permission.location.request();
+      }
+    }
+  }
+  
+
+  Future<void> isUserARider() async {
+    isRider =
+    await Database_Service(userId: _auth_service.getUserId()).isUserARider();
+    if(isRider) {
+      if(await isOnGoingJob()){
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return const OnGoingJobScreen();
+        }));
+      }
+    }
+  }
 
 
   Future<void> initializeData() async {
@@ -75,6 +114,22 @@ class _HomeScreenRiderState extends State<HomeScreenRider> {
     setState(() {
       isLoading = false;
     });
+  }
+
+
+  double calculateRadius(double currentLat, double currentLng, double targetLat, double targetLng) {
+    const double earthRadius = 6371.0; // Earth's radius in kilometers
+
+    double dLat = degreesToRadians(targetLat - currentLat);
+    double dLng = degreesToRadians(targetLng - currentLng);
+
+    double a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(degreesToRadians(currentLat)) * cos(degreesToRadians(targetLat)) *
+            sin(dLng / 2) * sin(dLng / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    double distance = earthRadius * c;
+
+    return distance ;
   }
 
 
